@@ -225,26 +225,32 @@ a+x
 
 
 # for testing NeuralNet$plot()
-nn <- NeuralNet$new(c(1,2,1))
+nn <- NeuralNet$new(c(2,4,4,4,2))
 
 # setting weights to be random
 nn$weights <- list(
-  matrix(runif(2, min = -1), nrow = 2),
-  matrix(runif(2, min = -1), ncol = 2)
+  matrix(runif(8, min = -1), nrow = 4),
+  matrix(runif(16, min = -1), nrow = 4),
+  matrix(runif(16, min = -1), nrow = 4),
+  matrix(runif(8, min = -1), nrow = 2)
 )
 
 # setting bias to be random
-nn$bias <- list(runif(2, min = -1))
+nn$bias <- list(
+  runif(4, min = -1),
+  runif(4, min = -1),
+  runif(4, min = -1)
+  )
 
 nn$weights
 nn$bias
 nn$plot()
 
-# will not change line width
-nn$plot(standard.lwd = TRUE)
+### will not change line width
+#nn$plot(standard.lwd = TRUE)
 
-# will not change colors
-nn$plot(col.fct = NULL)
+### will not change colors
+#nn$plot(col.fct = NULL)
 
-# will change neiter line width nor color
-nn$plot(standard.lwd = TRUE, col.fct = NULL)
+### will change neiter line width nor color
+#nn$plot(standard.lwd = TRUE, col.fct = NULL)
