@@ -1,5 +1,3 @@
-library(R6)
-
 #hopefully this doesn't need to be moved inside the class when this is a package
 predefinedactivation <- list(
   ReLU = function(x) {max(0,x)},
@@ -7,7 +5,8 @@ predefinedactivation <- list(
   tanh = function(x) {tanh(x)}
 )
 
-NeuralNet <- R6Class("NeuralNet",
+#' R6 Class Representing a Neural Network
+NeuralNet <- R6::R6Class("NeuralNet",
 public = list(
   inputsize = NULL,
   weights = list(),
@@ -77,6 +76,32 @@ public = list(
     output <- sapply(output, self$outputfct)
     output
   },
+
+  #' @description
+  #' plot an R6 NeuralNet using graphics
+  #' @param max.lwd numeric value representing the maximum linewidth, default is 5
+  #' @param standard.lwd boolean value wether or not all lines should be normalized
+  #' @param col.fct function taking a vecttor of values ranging from -1 to 1, returns a vector of colors to be used.
+  #' If \code{col.fct} is \code{NULL} all lines will be black
+  #' @examples
+  #' nn <- NeuralNet$new(c(2,4,4,2))
+  #'
+  #' # will plot the Neural Network
+  #' nn$plot()
+  #'
+  #' # will plot the Neural Network with normalized linewidth
+  #' nn$plot(standard.lwd = TRUE)
+  #'
+  #' # will plot the Neural Network with only two colors,
+  #' # red for negative values, green for positive values
+  #' nn$plot(col.fct = function(x) {
+  #'     b <- (x < 0)
+  #'       v <- vector(length = length(b))
+  #'       v[b] <- "red"
+  #'       v[!b] <- "green"
+  #'
+  #'       v
+  #' })
   plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) }) {
     # col.fct takes an vector with values ranging from -1 to 1
 
