@@ -127,16 +127,6 @@ NeuralNet <- R6Class("NeuralNet",
                            x.2.all <- rep(x.2, times = (p[layer] + 1))
                            y.2.all <- rep(y.2, times = (p[layer] + 1))
 
-                           print("x.1.all")
-                           print(x.1.all)
-                           print("y.1.all")
-                           print(y.1.all)
-
-                           print("x.2.all")
-                           print(x.2.all)
-                           print("y.2.all")
-                           print(y.2.all)
-
                            stopifnot("something went wrong,
                                      x.1.all and y.1.all are of different lengths"
                                      = length(x.1.all) == length(y.1.all))
@@ -167,7 +157,7 @@ NeuralNet <- R6Class("NeuralNet",
                          # adding coordinates of last layer to arrays
                          y <- c(y, y.1)
                          x <- c(x, x.1)
-                         l <- c(l, paste(layer, ",", p[layer]:1))
+                         l <- c(l, paste(layer, ",", p[length(p)]:1))
 
                          # initialize plot
                          graphics::par(mar = c(2,2,2,2))
