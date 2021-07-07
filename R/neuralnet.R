@@ -73,7 +73,9 @@ NeuralNet <- R6Class("NeuralNet",
                          output <- sapply(output, self$outputfct)
                          output
                        },
-                       plot = function() {
+                       plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) }) {
+                         # col.fct takes an vector with values ranging from -1 to 1
+
                          # same as 'layers' of 'initialize()'
                          p <- c(self$inputsize, sapply(self$weights, function(x) nrow(x)))
 
@@ -121,11 +123,17 @@ NeuralNet <- R6Class("NeuralNet",
 
                            # y coord of bias node is fix
 
-
-                           x.1.all <- rep(c(x.1, x.b), each = p[layer + 1])
-                           y.1.all <- rep(c(y.1, y.b), each = p[layer + 1])
-                           x.2.all <- rep(x.2, times = (p[layer] + 1))
-                           y.2.all <- rep(y.2, times = (p[layer] + 1))
+                           if(length(self$bias) < layer){
+                             x.1.all <- rep(x.1, each = p[layer + 1])
+                             y.1.all <- rep(y.1, each = p[layer + 1])
+                             x.2.all <- rep(x.2, times = p[layer])
+                             y.2.all <- rep(y.2, times = p[layer])
+                           } else {
+                             x.1.all <- rep(c(x.1, x.b), each = p[layer + 1])
+                             y.1.all <- rep(c(y.1, y.b), each = p[layer + 1])
+                             x.2.all <- rep(x.2, times = (p[layer] + 1))
+                             y.2.all <- rep(y.2, times = (p[layer] + 1))
+                           }
 
                            stopifnot("something went wrong,
                                      x.1.all and y.1.all are of different lengths"
@@ -142,12 +150,26 @@ NeuralNet <- R6Class("NeuralNet",
                            x1 <- c(x1, x.2.all)
                            y1 <- c(y1, y.2.all)
 
+                           # linewidths
+                           if (length(self$bias) < layer) {
+                             lwd <- c(lwd, as.vector(self$weights[[layer]]))
+                           } else {
+                             lwd <- c(lwd, as.vector(self$weights[[layer]]),  self$bias[[layer]])
+                           }
+
+
                            #lwd <- c(lwd, rep(1, length.out = length(x.1.all)))
 
                            # adding coordinates to arrays
-                           y <- c(y, y.1, y.b)
-                           x <- c(x, x.1, x.b)
-                           l <- c(l, paste(layer, ",", p[layer]:1), paste("b", layer))
+                           if (length(self$bias) < layer) {
+                             y <- c(y, y.1)
+                             x <- c(x, x.1)
+                             l <- c(l, paste(layer, ",", p[layer]:1))
+                           } else {
+                             y <- c(y, y.1, y.b)
+                             x <- c(x, x.1, x.b)
+                             l <- c(l, paste(layer, ",", p[layer]:1), paste("b", layer))
+                           }
 
                            # setting x.1 and y.1 coords for next iteration of loop
                            y.1 <- y.2
@@ -159,12 +181,22 @@ NeuralNet <- R6Class("NeuralNet",
                          x <- c(x, x.1)
                          l <- c(l, paste(layer, ",", p[length(p)]:1))
 
+                         # drawing lines
+                         if(standard.lwd) lwd <- (0.5 - 1 * (lwd < 0)) * (lwd != 0)
+                         else lwd <- (lwd / max(abs(lwd)))
+
+                         if(is.null(col.fct)){
+                           col <- "black"
+                         } else {
+                           col <- col.fct(lwd)
+                         }
+
                          # initialize plot
                          graphics::par(mar = c(2,2,2,2))
                          graphics::plot(x = c(0,1), y = c(0,1), type="n", axes=FALSE, xlab = "", ylab = "")
 
                          # drawing lines
-                         segments(x0 = x0, y0 = y0, x1 = x1, y1 = y1)
+                         graphics::segments(x0 = x0, y0 = y0, x1 = x1, y1 = y1, lwd = (abs(lwd) * max.lwd), col = col)
 
                          # drawing points
                          graphics::points(x, y, pch = 21, cex = 3, bg = "white")
@@ -191,3 +223,28 @@ x <- c(0,1,1)
 
 a+x
 
+
+# for testing NeuralNet$plot()
+nn <- NeuralNet$new(c(1,2,1))
+
+# setting weights to be random
+nn$weights <- list(
+  matrix(runif(2, min = -1), nrow = 2),
+  matrix(runif(2, min = -1), ncol = 2)
+)
+
+# setting bias to be random
+nn$bias <- list(runif(2, min = -1))
+
+nn$weights
+nn$bias
+nn$plot()
+
+# will not change line width
+nn$plot(standard.lwd = TRUE)
+
+# will not change colors
+nn$plot(col.fct = NULL)
+
+# will change neiter line width nor color
+nn$plot(standard.lwd = TRUE, col.fct = NULL)
