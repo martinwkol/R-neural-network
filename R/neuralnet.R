@@ -78,11 +78,45 @@ public = list(
   },
 
   #' @description
-  #' plot an R6 NeuralNet using graphics
-  #' @param max.lwd numeric value representing the maximum linewidth, default is 5
-  #' @param standard.lwd boolean value wether or not all lines should be normalized
-  #' @param col.fct function taking a vecttor of values ranging from -1 to 1, returns a vector of colors to be used.
-  #' If \code{col.fct} is \code{NULL} all lines will be black
+  #' plot an R6 NeuralNet using graphics and grDevices
+  #'
+  #' @param max.lwd numeric value representing the maximum linewidth, default is 5.
+  #' @param standard.lwd logical value, should all lines should be normalized.
+  #' @param col.fct a function determining the color for specific values.
+  #' @param image.save logical value, should the image be saved as file.
+  #' @param image.filename name of the outputfile, if \code{image.save = TRUE}
+  #' filepath and filename used to save the image.
+  #' @param image.type name of the filetype, if \code{image.save = TRUE} this
+  #' filetype will be used to save the image.
+  #'
+  #'
+  #' @details
+  #' ## Color Functions
+  #' \code{col.fct} will be given a vector with values between -1 and 1.
+  #' They must return a vector of colors usable by the graphics package
+  #' (see the \code{col} Argument of \code{?graphics::par}).
+  #'
+  #' If the Color Function is \code{NULL} all colors will be black.
+  #'
+  #' ## Saving Images
+  #' When \code{image.save} is set to TRUE, \code{NeuralNet$plot} will attempt
+  #' to save the shown graphic as file.
+  #'
+  #' The file will be saved using the \code{image.filename} Argument, this can
+  #' be a path to a file. If the path does not exist \code{grDevices::device()}
+  #' will give an error. If \code{image.filename} does not contain a valid file
+  #' extension to be used with the type specified in \code{image.type}, an
+  #' extension will be added.
+  #'
+  #' Valid filetypes are:
+  #' * \code{wmf} and \code{emf} using \code{grDevices::win.metafile}
+  #' * \code{png} using \code{grDevices::png}
+  #' * \code{jpg} and \code{jpeg} using \code{grDevices::jpeg}
+  #' * \code{bmp} using \code{grDevices::bmp}
+  #' * \code{tif} and \code{tiff} using \code{grDevices::tiff}
+  #' * \code{ps} and \code{eps} using \code{grDevices::postscript}
+  #' * \code{pdf} using \code{grDevices::pdf}
+  #'
   #' @examples
   #' nn <- NeuralNet$new(c(2,4,4,2))
   #'
@@ -102,8 +136,40 @@ public = list(
   #'
   #'       v
   #' })
-  plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) }) {
-    # col.fct takes an vector with values ranging from -1 to 1
+  #'
+  #' # saving a plot
+  #'
+  #' # file will be saved as 'file.png'
+  #' nn$plot(image.save = TRUE,
+  #'   image.filename = "file",
+  #'   image.type = "png")
+  #'
+  #' # here '.jpeg' is not a valid extension for type 'png', '.png' will
+  #' # be appendedto the filename, file will be saved as 'file.jpeg.png'
+  #' nn$plot(image.save = TRUE,
+  #'   image.filename = "file.jpeg",
+  #'   image.type = "png")
+  #'
+  #' # file will be saved in directory 'test/', if 'test/' does not exist
+  #' # grDevices will return an error
+  #' nn$plot(image.save = TRUE,
+  #'   image.filename = "test/file.jpg",
+  #'   image.type = "jpg")
+  #'
+  plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) },
+                  image.save = FALSE, image.filename = NULL, image.type = NULL) {
+    stopifnot("col.fct must be a function" = identical(class(col.fct), "function"))
+    if(image.save){
+      stopifnot("image.filename must not be NULL" = !is.null(image.filename))
+      stopifnot("image.type must not be NULL" = !is.null(image.type))
+
+      valid_image_types <- c("wmf", "emf", "png", "jpg", "jpeg", "bmp",
+                             "tif", "tiff", "ps", "eps", "pdf")
+      txt <- paste("image.type must be one of", valid_image_types)
+      stopifnot(txt =
+                  {image.type %in% valid_image_types})
+    }
+
 
     # same as 'layers' of 'initialize()'
     p <- c(self$inputsize, sapply(self$weights, function(x) nrow(x)))
@@ -190,11 +256,11 @@ public = list(
       if (length(self$bias) < layer) {
         y <- c(y, y.1)
         x <- c(x, x.1)
-        l <- c(l, paste(layer, ",", p[layer]:1))
+        l <- c(l, paste(layer, ",", p[layer]:1, sep = ""))
       } else {
         y <- c(y, y.1, y.b)
         x <- c(x, x.1, x.b)
-        l <- c(l, paste(layer, ",", p[layer]:1), paste("b", layer))
+        l <- c(l, paste(layer, ",", p[layer]:1, sep = ""), paste("b ", layer, sep = ""))
       }
 
       # setting x.1 and y.1 coords for next iteration of loop
@@ -205,7 +271,7 @@ public = list(
     # adding coordinates of last layer to arrays
     y <- c(y, y.1)
     x <- c(x, x.1)
-    l <- c(l, paste(layer, ",", p[length(p)]:1))
+    l <- c(l, paste(layer, ",", p[length(p)]:1, sep = ""))
 
     # drawing lines
     if(standard.lwd) lwd <- (0.5 - 1 * (lwd < 0)) * (lwd != 0)
@@ -226,7 +292,39 @@ public = list(
 
     # drawing points
     graphics::points(x, y, pch = 21, cex = 3, bg = "white")
+
+    #adding labels
     graphics::text(x, y, labels = l, pos = 3, offset = 1)
+
+    # saving image
+    if(image.save){
+
+      # ensuring that file extension contained in the filename,
+      # some of the grDevice functions can do this automaticaly, but not all
+      if(identical(grep(paste(".", image.type, sep = ""), image.filename, ignore.case = TRUE), integer(0)))
+        image.filename <- paste(image.filename, ".", image.type, sep = "")
+
+      # selecting correct grDevices function for the filetype
+      if(image.type %in% c("emf", "wmf"))
+        image.fct <- grDevices::win.metafile
+      else if(image.type %in% c("png"))
+        image.fct <- grDevices::png
+      else if(image.type %in% c("jpg", "jpeg"))
+        image.fct <- grDevices::jpeg
+      else if(image.type %in% c("bmp"))
+        image.fct <- grDevices::bmp
+      else if(image.type %in% c("tif", "tiff"))
+        image.fct <- grDevices::tiff
+      else if(image.type %in% c("ps", "eps"))
+        image.fct <- grDevices::postscript
+      else if(image.type %in% c("pdf"))
+        image.fct <- grDevices::pdf
+
+      # copying currently displayed plot and saving it using image.fct
+      # with the name image.filename
+      grDevices::dev.copy(image.fct, image.filename)
+      grDevices::dev.off()
+    }
     }
   )
 )
@@ -271,7 +369,7 @@ nn$bias <- list(
 
 nn$weights
 nn$bias
-nn$plot()
+nn$plot(image.save = TRUE, image.filename = ".test.png", image.type = "png")
 
 ### will not change line width
 #nn$plot(standard.lwd = TRUE)

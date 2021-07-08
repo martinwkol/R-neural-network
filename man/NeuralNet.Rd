@@ -32,6 +32,26 @@ nn$plot(col.fct = function(x) {
 
       v
 })
+
+# saving a plot
+
+# file will be saved as 'file.png'
+nn$plot(image.save = TRUE,
+  image.filename = "file",
+  image.type = "png")
+
+# here '.jpeg' is not a valid extension for type 'png', '.png' will
+# be appendedto the filename, file will be saved as 'file.jpeg.png'
+nn$plot(image.save = TRUE,
+  image.filename = "file.jpeg",
+  image.type = "png")
+
+# file will be saved in directory 'test/', if 'test/' does not exist
+# grDevices will return an error
+nn$plot(image.save = TRUE,
+  image.filename = "test/file.jpg",
+  image.type = "jpg")
+
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -64,27 +84,71 @@ nn$plot(col.fct = function(x) {
 \if{html}{\out{<a id="method-plot"></a>}}
 \if{latex}{\out{\hypertarget{method-plot}{}}}
 \subsection{Method \code{plot()}}{
-plot an R6 NeuralNet using graphics
+plot an R6 NeuralNet using graphics and grDevices
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NeuralNet$plot(
   max.lwd = 5,
   standard.lwd = FALSE,
-  col.fct = function(x) {     grDevices::hcl(x * 60 + 60) }
+  col.fct = function(x) {     grDevices::hcl(x * 60 + 60) },
+  image.save = FALSE,
+  image.filename = NULL,
+  image.type = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{max.lwd}}{numeric value representing the maximum linewidth, default is 5}
+\item{\code{max.lwd}}{numeric value representing the maximum linewidth, default is 5.}
 
-\item{\code{standard.lwd}}{boolean value wether or not all lines should be normalized}
+\item{\code{standard.lwd}}{logical value, should all lines should be normalized.}
 
-\item{\code{col.fct}}{function taking a vecttor of values ranging from -1 to 1, returns a vector of colors to be used.
-If \code{col.fct} is \code{NULL} all lines will be black}
+\item{\code{col.fct}}{a function determining the color for specific values.}
+
+\item{\code{image.save}}{logical value, should the image be saved as file.}
+
+\item{\code{image.filename}}{name of the outputfile, if \code{image.save = TRUE}
+filepath and filename used to save the image.}
+
+\item{\code{image.type}}{name of the filetype, if \code{image.save = TRUE} this
+filetype will be used to save the image.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+\subsection{Color Functions}{
+
+\code{col.fct} will be given a vector with values between -1 and 1.
+They must return a vector of colors usable by the graphics package
+(see the \code{col} Argument of \code{?graphics::par}).
+
+If the Color Function is \code{NULL} all colors will be black.
+}
+
+\subsection{Saving Images}{
+
+When \code{image.save} is set to TRUE, \code{NeuralNet$plot} will attempt
+to save the shown graphic as file.
+
+The file will be saved using the \code{image.filename} Argument, this can
+be a path to a file. If the path does not exist \code{grDevices::device()}
+will give an error. If \code{image.filename} does not contain a valid file
+extension to be used with the type specified in \code{image.type}, an
+extension will be added.
+
+Valid filetypes are:
+\itemize{
+\item \code{wmf} and \code{emf} using \code{grDevices::win.metafile}
+\item \code{png} using \code{grDevices::png}
+\item \code{jpg} and \code{jpeg} using \code{grDevices::jpeg}
+\item \code{bmp} using \code{grDevices::bmp}
+\item \code{tif} and \code{tiff} using \code{grDevices::tiff}
+\item \code{ps} and \code{eps} using \code{grDevices::postscript}
+\item \code{pdf} using \code{grDevices::pdf}
+}
+}
+}
+
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{nn <- NeuralNet$new(c(2,4,4,2))
@@ -105,6 +169,26 @@ nn$plot(col.fct = function(x) {
 
       v
 })
+
+# saving a plot
+
+# file will be saved as 'file.png'
+nn$plot(image.save = TRUE,
+  image.filename = "file",
+  image.type = "png")
+
+# here '.jpeg' is not a valid extension for type 'png', '.png' will
+# be appendedto the filename, file will be saved as 'file.jpeg.png'
+nn$plot(image.save = TRUE,
+  image.filename = "file.jpeg",
+  image.type = "png")
+
+# file will be saved in directory 'test/', if 'test/' does not exist
+# grDevices will return an error
+nn$plot(image.save = TRUE,
+  image.filename = "test/file.jpg",
+  image.type = "jpg")
+
 }
 \if{html}{\out{</div>}}
 
