@@ -1,7 +1,7 @@
 #hopefully this doesn't need to be moved inside the class when this is a package
 predefinedactivation <- list(
   ReLU = function(x) {max(0,x)},
-  sigmoid = function(x) {1/(1 + e^(-x))},
+  sigmoid = function(x) {1/(1 + exp(-x))},
   tanh = function(x) {tanh(x)}
 )
 
