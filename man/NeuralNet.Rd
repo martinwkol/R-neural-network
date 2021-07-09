@@ -145,6 +145,7 @@ Valid filetypes are:
 \item \code{tif} and \code{tiff} using \code{grDevices::tiff}
 \item \code{ps} and \code{eps} using \code{grDevices::postscript}
 \item \code{pdf} using \code{grDevices::pdf}
+\item \code{svg} using \code{grDevices::svg}
 }
 }
 }
