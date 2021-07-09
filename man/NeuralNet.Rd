@@ -25,12 +25,12 @@ nn$plot(standard.lwd = TRUE)
 # will plot the Neural Network with only two colors,
 # red for negative values, green for positive values
 nn$plot(col.fct = function(x) {
-    b <- (x < 0)
-      v <- vector(length = length(b))
-      v[b] <- "red"
-      v[!b] <- "green"
+  b <- (x < 0)
+  v <- vector(length = length(b))
+  v[b] <- "red"
+  v[!b] <- "green"
 
-      v
+  v
 })
 
 # saving a plot
@@ -163,12 +163,12 @@ nn$plot(standard.lwd = TRUE)
 # will plot the Neural Network with only two colors,
 # red for negative values, green for positive values
 nn$plot(col.fct = function(x) {
-    b <- (x < 0)
-      v <- vector(length = length(b))
-      v[b] <- "red"
-      v[!b] <- "green"
+  b <- (x < 0)
+  v <- vector(length = length(b))
+  v[b] <- "red"
+  v[!b] <- "green"
 
-      v
+  v
 })
 
 # saving a plot
