@@ -116,6 +116,7 @@ public = list(
   #' * \code{tif} and \code{tiff} using \code{grDevices::tiff}
   #' * \code{ps} and \code{eps} using \code{grDevices::postscript}
   #' * \code{pdf} using \code{grDevices::pdf}
+  #' * \code{svg} using \code{grDevices::svg}
   #'
   #' @examples
   #' nn <- NeuralNet$new(c(2,4,4,2))
@@ -164,7 +165,7 @@ public = list(
       stopifnot("image.type must not be NULL" = !is.null(image.type))
 
       valid_image_types <- c("wmf", "emf", "png", "jpg", "jpeg", "bmp",
-                             "tif", "tiff", "ps", "eps", "pdf")
+                             "tif", "tiff", "ps", "eps", "pdf", "svg")
       txt <- paste("image.type must be one of", valid_image_types)
       stopifnot(txt =
                   {image.type %in% valid_image_types})
@@ -319,6 +320,8 @@ public = list(
         image.fct <- grDevices::postscript
       else if(image.type %in% c("pdf"))
         image.fct <- grDevices::pdf
+      else if(image.type %in% c("svg"))
+        image.fct <- grDevices::svg
 
       # copying currently displayed plot and saving it using image.fct
       # with the name image.filename
