@@ -14,7 +14,9 @@ public = list(
   nrhiddenlayers = NULL,
   actfct = NULL,
   outputfct = NULL,
-  initialize = function(layers, activationfct = "ReLU", outputfct = NULL) {
+  category = NULL,
+  initialize = function(layers, activationfct = "ReLU", outputfct = NULL,
+                        category="classification") {
 
     #choose activation function
     if(class(activationfct) == "character") {
@@ -54,6 +56,10 @@ public = list(
     }
     #remove last bias because no bias for output layer
     self$bias <- self$bias[-length(layers)]
+
+    if (!(category %in% c("classification", "regression")))
+        stop("Unknown category")
+    self$category <- category
   },
   calculate = function(input) {
     stopifnot("input size doesn't fit inputlayer size" = length(input) == self$inputsize)
