@@ -4,7 +4,11 @@ predefinedactivation <- list(
   sigmoid = function(x) {1/(1 + exp(-x))},
   tanh = function(x) {tanh(x)}
 )
-
+predefinedactivationDriv <- list(
+  ReLU = function(x) {as.integer(x > 0)},
+  sigmoid = function(x) {predefinedactivation$sigmoid(x)(1 - predefinedactivation$sigmoid(x))},
+  tanh = function(x) {1/cosh(x)^2}
+)
 #' R6 Class Representing a Neural Network
 NeuralNet <- R6::R6Class("NeuralNet",
 public = list(
@@ -13,19 +17,23 @@ public = list(
   bias = list(),
   nrhiddenlayers = NULL,
   actfct = NULL,
+  dActfct =
   outputfct = NULL,
   category = NULL,
-  initialize = function(layers, activationfct = "ReLU", outputfct = NULL,
-                        category="classification") {
+  initialize = function(layers, activationfct = "ReLU", dActivationfct = "ReLU",
+                        outputfct = NULL, category="classification") {
 
     #choose activation function
     if(class(activationfct) == "character") {
       stopifnot("Specified activation function is not implemented." = !is.null(predefinedactivation[[activationfct]]))
       self$actfct <- predefinedactivation[[activationfct]]
+      self$dActfct <- predefinedactivationDriv[[activationfct]]
     } else if (class(activationfct) == "function") {
+      stopifnot("Derivative of activation function is missing" = class(dActivationfct) == "function")
       self$actfct <- activationfct
+      self$dActfct <- dActivationfct
     } else {
-       stop("activationfct must be a character or function")
+      stop("activationfct must be a character or function")
     }
 
     #choose activation function for outputlayer
@@ -62,25 +70,31 @@ public = list(
     self$category <- category
   },
   calculate = function(input) {
-    stopifnot("input size doesn't fit inputlayer size" = length(input) == self$inputsize)
+    stopifnot("input size doesn't fit inputlayer size" = length(input) == neuralnet$inputsize)
 
-    #don't override input, it probably needs to be saved for some learning methods
+    rawNodeValues <- list(input)
+    nodeValues <- list(input)
     output <- input
 
-    #for(w in self$weights[1:self$nrhiddenlayers]) {
     for(i in 1:self$nrhiddenlayers) {
       #weights
       output <- self$weights[[i]]%*%output
       #bias
       output <- output + self$bias[[i]]
+      rawNodeValues <- append(rawNodeValues, output)
       #apply the activation function
       output <- sapply(output, self$actfct)
+      nodeValues <- append(nodeValues, output)
     }
 
-    #calculate weigths to output layer and the output activation function if specified(no bias)
     output <- self$weights[[self$nrhiddenlayers + 1]] %*% output
+    rawNodeValues <- append(rawNodeValues, output)
     output <- sapply(output, self$outputfct)
-    output
+    nodeValues <- append(nodeValues, output)
+
+    list(rawNodeValues = rawNodeValues,
+         nodeValues = nodeValues,
+         output = output)
   },
 
   #' @description
