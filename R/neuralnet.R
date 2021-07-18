@@ -17,10 +17,10 @@ public = list(
   bias = list(),
   nrhiddenlayers = NULL,
   actfct = NULL,
-  dActfct =
+  dActfct = NULL,
   outputfct = NULL,
   category = NULL,
-  initialize = function(layers, activationfct = "ReLU", dActivationfct = "ReLU",
+  initialize = function(layers, activationfct = "ReLU", dActivationfct = NULL,
                         outputfct = NULL, category="classification") {
 
     #choose activation function
@@ -70,7 +70,7 @@ public = list(
     self$category <- category
   },
   calculate = function(input) {
-    stopifnot("input size doesn't fit inputlayer size" = length(input) == neuralnet$inputsize)
+    stopifnot("input size doesn't fit inputlayer size" = length(input) == self$inputsize)
 
     rawNodeValues <- list(input)
     nodeValues <- list(input)
@@ -353,7 +353,10 @@ public = list(
 )
 
 
-myn <- NeuralNet$new(c(1,3,3,1), function(x){x})
+myn <- NeuralNet$new(
+  c(1,3,3,1),
+  activationfct =  function(x) x,
+  dActivationfct = function(x) 1)
 
 myn$weights
 myn$bias
