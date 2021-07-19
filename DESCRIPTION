@@ -2,10 +2,11 @@ Package: NeuralNetwork
 Title: Creating, Training and Using Neural Networks
 Version: 0.0.0.9000
 Authors@R: c(
-    person(given = "Dorothea", family = "Zeiler", role = c("aut", "cre")),
-    person(given = "Karl", family = "Musulin", role = c("aut", "cre")),
-    person(given = "Martin", family = "Koloseus", role = c("aut", "cre")),
-    person(given = "Rico", family = "Sebastian", role = c("aut", "cre"))
+    person(given = "Dorothea", family = "Zeiler", role = c("aut")),
+    person(given = "Karl", family = "Musulin", role = c("aut")),
+    person(given = "Martin", family = "Koloseus", role = c("aut")),
+    person(given = "Rico", family = "Sebastian", role = c("aut", "cre"),
+        email = "r.j.g.sebastian@gmail.com")
     )
 Description: Used to Create and Train Neural Networks
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
