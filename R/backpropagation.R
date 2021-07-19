@@ -1,3 +1,15 @@
+
+#' sgdAlg - Stochastic Gradient Descent
+#'
+#' sgdAlg implements an Algorithm for training a \code{?NeuralNet} Neural Network
+#' using Stochastic Gradient Descent.
+#'
+#' @param neuralnet A R6 Neural Network that will be trained with the given data
+#' @param training_data a data set used to train the Neural Network
+#' @param learing_rate the learning rate to be used by the Algorithm
+#' @param lamda a lambda to be used by the Algorithm
+#' @seealso ?NeuralNet
+#' @export
 sgdAlg <- function(neuralnet, training_data, learning_rate, lambda) {
   if (neuralnet$category == "regression") {
     getLastXInfluence <- function(expectedOutput, netOutput, lastWeights) {
