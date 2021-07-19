@@ -53,6 +53,28 @@ nn$plot(image.save = TRUE,
   image.type = "jpg")
 
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{inputsize}}{size of the input for the Neural Network (first layer of nodes).}
+
+\item{\code{weights}}{list of matrices representing the weights of the connections
+between nodes.}
+
+\item{\code{bias}}{list of vectors representing the biases for nodes.}
+
+\item{\code{nrhiddenlayers}}{number of hidden layers of the Neural Network.}
+
+\item{\code{actfct}}{function to be used as activation function.}
+
+\item{\code{dActfct}}{function to be used as derivative of the activation function.}
+
+\item{\code{outputfct}}{function to be used as activation function on the last layer.}
+
+\item{\code{category}}{either classification or regression}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -67,7 +89,13 @@ nn$plot(image.save = TRUE,
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{NeuralNet$new(layers, activationfct = "ReLU", outputfct = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{NeuralNet$new(
+  layers,
+  activationfct = "ReLU",
+  dActivationfct = NULL,
+  outputfct = NULL,
+  category = "classification"
+)}\if{html}{\out{</div>}}
 }
 
 }

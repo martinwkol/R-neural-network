@@ -12,14 +12,32 @@ predefinedactivationDriv <- list(
 #' R6 Class Representing a Neural Network
 NeuralNet <- R6::R6Class("NeuralNet",
 public = list(
+
+  #' @field inputsize size of the input for the Neural Network (first layer of nodes).
   inputsize = NULL,
+
+  #' @field weights list of matrices representing the weights of the connections
+  #' between nodes.
   weights = list(),
+
+  #' @field bias list of vectors representing the biases for nodes.
   bias = list(),
+
+  #' @field nrhiddenlayers number of hidden layers of the Neural Network.
   nrhiddenlayers = NULL,
+
+  #' @field actfct function to be used as activation function.
   actfct = NULL,
+
+  #' @field dActfct function to be used as derivative of the activation function.
   dActfct = NULL,
+
+  #' @field outputfct function to be used as activation function on the last layer.
   outputfct = NULL,
+
+  #' @field category either classification or regression
   category = NULL,
+
   initialize = function(layers, activationfct = "ReLU", dActivationfct = NULL,
                         outputfct = NULL, category="classification") {
 
