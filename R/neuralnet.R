@@ -9,7 +9,9 @@ predefinedactivationDriv <- list(
   sigmoid = function(x) {predefinedactivation$sigmoid(x)(1 - predefinedactivation$sigmoid(x))},
   tanh = function(x) {1/cosh(x)^2}
 )
+
 #' R6 Class Representing a Neural Network
+#' @export
 NeuralNet <- R6::R6Class("NeuralNet",
 public = list(
 
