@@ -34,7 +34,7 @@ sgdAlg <- function(neuralnet, training_data, learning_rate, lambda) {
       -2 * (expectedOutput - netOutput) * t(prevNodeValues)
     }
   } else if (neuralnet$category == "classification") {
-    M <- function(x) e^x / sum(x)
+    M <- function(x) exp(x) / sum(x)
     getLastWeightsInfluence <- function(expectedOutput, netOutput, prevNodeValues) {
       -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
     }
