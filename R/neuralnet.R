@@ -131,6 +131,15 @@ public = list(
         stop("Unknown category")
     self$category <- category
   },
+  #' @description
+  #' will calculate an \code{output} for a given \code{input} using the existing
+  #' weights and biases, as well as the existing activation and output functions.
+  #'
+  #' @param input numeric vector of values with length equal the number of nodes
+  #' in the input layer.
+  #'
+  #' @return list with three numeric vectors, containing rawNodeValues,
+  #' nodeValues and output.
   calculate = function(input) {
     stopifnot("input size doesn't fit inputlayer size" = length(input) == self$inputsize)
 

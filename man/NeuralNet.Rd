@@ -180,10 +180,24 @@ nn.2 <- NeuralNet$new(
 \if{html}{\out{<a id="method-calculate"></a>}}
 \if{latex}{\out{\hypertarget{method-calculate}{}}}
 \subsection{Method \code{calculate()}}{
+will calculate an \code{output} for a given \code{input} using the existing
+weights and biases, as well as the existing activation and output functions.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NeuralNet$calculate(input)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{input}}{numeric vector of values with length equal the number of nodes
+in the input layer.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+list with three numeric vectors, containing rawNodeValues,
+nodeValues and output.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-plot"></a>}}
