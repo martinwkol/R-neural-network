@@ -11,6 +11,21 @@ R6 Class Representing a Neural Network
 \examples{
 
 ## ------------------------------------------------
+## Method `NeuralNet$new`
+## ------------------------------------------------
+
+# will generate a Neural Network with two input nodes, two output nodes,
+# and two hidden layers with four nodes each.
+nn.1 <- NeuralNet$new(c(2,4,4,2))
+
+# will generate a Neural Network using the predefined sigmoid function as
+# activation function for all layers (including the outputlayer)
+nn.2 <- NeuralNet$new(
+  c(2,4,4,2),
+  activationfct = "sigmoid",
+  outputfct = "sigmoid")
+
+## ------------------------------------------------
 ## Method `NeuralNet$plot`
 ## ------------------------------------------------
 
@@ -88,6 +103,7 @@ between nodes.}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+create a new R6 instance of a NeuralNetwork
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{NeuralNet$new(
   layers,
@@ -96,6 +112,67 @@ between nodes.}
   outputfct = NULL,
   category = "classification"
 )}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{layers}}{numeric vector with nodes per layer}
+
+\item{\code{activationfct}}{string matching predefined activation function or
+other function, see \code{Activation Functions}.}
+
+\item{\code{dActivationfct}}{NULL, when using predefined Activation functions, or
+the derivative of a custom Activation function, it is not checked for
+correcteness.}
+
+\item{\code{outputfct}}{string matching predefined activation function or
+other a function, see \code{Activation Functions}, used as activation
+function for the last layer of nodes}
+
+\item{\code{category}}{string matching valid category for Neural Network, either
+classification or regression.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+\subsection{Activation Functions}{
+
+This Function is used on the Values of a Node after calculating Weights
+and Biases. The values for \code{activationfct} and \code{outputfct}
+can be either strings matching a predefined Function or a \code{function}.
+
+The predefined Functions are currently:
+\itemize{
+\item ReLu
+\item sigmoid
+\item tanh
+}
+
+\code{outputfct} can alternatively be \code{NULL} if no activation
+function shoud be applied to the last layer.
+
+When using a custom function to be used, a derivative for this function must
+be given to be used while training the Neural Network. This derivative is
+not checked for correcteness.
+}
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{# will generate a Neural Network with two input nodes, two output nodes,
+# and two hidden layers with four nodes each.
+nn.1 <- NeuralNet$new(c(2,4,4,2))
+
+# will generate a Neural Network using the predefined sigmoid function as
+# activation function for all layers (including the outputlayer)
+nn.2 <- NeuralNet$new(
+  c(2,4,4,2),
+  activationfct = "sigmoid",
+  outputfct = "sigmoid")
+}
+\if{html}{\out{</div>}}
+
 }
 
 }

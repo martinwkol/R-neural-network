@@ -38,6 +38,50 @@ public = list(
   #' @field category either classification or regression
   category = NULL,
 
+  #' @description
+  #' create a new R6 instance of a NeuralNetwork
+  #'
+  #' @param layers numeric vector with nodes per layer
+  #' @param activationfct string matching predefined activation function or
+  #' other function, see \code{Activation Functions}.
+  #' @param dActivationfct NULL, when using predefined Activation functions, or
+  #' the derivative of a custom Activation function, it is not checked for
+  #' correcteness.
+  #' @param outputfct string matching predefined activation function or
+  #' other a function, see \code{Activation Functions}, used as activation
+  #' function for the last layer of nodes
+  #' @param category string matching valid category for Neural Network, either
+  #' classification or regression.
+  #'
+  #' @details
+  #' ## Activation Functions
+  #' This Function is used on the Values of a Node after calculating Weights
+  #' and Biases. The values for \code{activationfct} and \code{outputfct}
+  #' can be either strings matching a predefined Function or a \code{function}.
+  #'
+  #' The predefined Functions are currently:
+  #' * ReLu
+  #' * sigmoid
+  #' * tanh
+  #'
+  #' \code{outputfct} can alternatively be \code{NULL} if no activation
+  #' function shoud be applied to the last layer.
+  #'
+  #' When using a custom function to be used, a derivative for this function must
+  #' be given to be used while training the Neural Network. This derivative is
+  #' not checked for correcteness.
+  #'
+  #' @examples
+  #' # will generate a Neural Network with two input nodes, two output nodes,
+  #' # and two hidden layers with four nodes each.
+  #' nn.1 <- NeuralNet$new(c(2,4,4,2))
+  #'
+  #' # will generate a Neural Network using the predefined sigmoid function as
+  #' # activation function for all layers (including the outputlayer)
+  #' nn.2 <- NeuralNet$new(
+  #'   c(2,4,4,2),
+  #'   activationfct = "sigmoid",
+  #'   outputfct = "sigmoid")
   initialize = function(layers, activationfct = "ReLU", dActivationfct = NULL,
                         outputfct = NULL, category="classification") {
 
