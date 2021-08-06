@@ -11,6 +11,7 @@
 #' @seealso ?NeuralNet
 #' @export
 sgdAlg <- function(neuralnet, training_data, learning_rate, lambda) {
+  M <- function(x) exp(x) / sum(x)
   if (neuralnet$category == "regression") {
     getLastXInfluence <- function(expectedOutput, netOutput, lastWeights) {
       -2 * (expectedOutput - netOutput) * t(lastWeights)
@@ -26,16 +27,19 @@ sgdAlg <- function(neuralnet, training_data, learning_rate, lambda) {
   }
 
   getPrevDelta <- function(delta, prevRawNodeValues, weights, dActfct) {
+    #print(t(weights))
+    #print(delta)
     (t(weights) %*% delta) * dActfct(prevRawNodeValues)
   }
 
   if (neuralnet$category == "regression") {
     getLastWeightsInfluence <- function(expectedOutput, netOutput, prevNodeValues) {
+      #print(prevNodeValues)
       -2 * (expectedOutput - netOutput) * t(prevNodeValues)
     }
   } else if (neuralnet$category == "classification") {
-    M <- function(x) exp(x) / sum(x)
     getLastWeightsInfluence <- function(expectedOutput, netOutput, prevNodeValues) {
+      #print(prevNodeValues)
       -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
     }
   }
@@ -49,56 +53,70 @@ sgdAlg <- function(neuralnet, training_data, learning_rate, lambda) {
   }
 
   calculateNewWeights <- function(oldWeights, weightsInfluence, learning_rate, lambda, N) {
+    print(weightsInfluence)
+    print(oldWeights)
     change <- weightsInfluence / N + 2 * lambda * oldWeights
     oldWeights - learning_rate * change
   }
 
+  layer2nvIndex <- function(layer) layer + 1
+
   backprop <- function(training_data_list) {
     N <- length(training_data_list)
-    aoLayers <- length(neuralnet$weights) + 1
+    L <- length(neuralnet$weights) - 1
 
     for(training_data in training_data_list) {
-      expectedOutput <- training_data$expectedOutputs
+      #print(training_data)
+
+      expectedOutput <- training_data$expectedOutput
       rawNodeValue <- training_data$rawNodeValues
       nodeValue <- training_data$nodeValues
 
-      deltaList <- lapply(seq(aoLayers - 1), \(x) NULL)
-      weightsInfluenceList <- lapply(seq(aoLayers), \(x) NULL)
+      deltaList <- lapply(seq(L), \(x) NULL)
+      weightsInfluenceList <- lapply(seq(L + 1), \(x) NULL)
 
       lastXInfluence <-
         getLastXInfluence(expectedOutput,
-                          nodeValue[[aoLayers]],
-                          neuralnet$weights[[aoLayers - 1]])
+                          nodeValue[[layer2nvIndex(L + 1)]],
+                          neuralnet$weights[[L + 1]])
 
-      deltaList[[aoLayers - 1]] <-
+      deltaList[[L]] <-
         getLastDelta( lastXInfluence,
-                      rawNodeValue[[aoLayers - 1]],
+                      rawNodeValue[[L]],
                       neuralnet$dActfct)
+      stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
 
-      weightsInfluenceList[[aoLayers]] <-
+      weightsInfluenceList[[L + 1]] <-
         getLastWeightsInfluence( expectedOutput,
-                                 nodeValue[[aoLayers]],
-                                 nodeValue[[aoLayers - 1]])
+                                 nodeValue[[layer2nvIndex(L + 1)]],
+                                 nodeValue[[layer2nvIndex(L)]])
+      #print(nodeValue)
+      #print(dim(weightsInfluenceList[[L + 1]]))
+      #print(dim(neuralnet$weights[[L + 1]]))
+      stopifnot(dim(weightsInfluenceList[[L + 1]]) == dim(neuralnet$weights[[L + 1]]))
 
-      for(l in rev(seq(aoLayers - 1)[-1])) {
+
+      for(l in rev(seq(L))) {
         weightsInfluenceList[[l]] <-
           getPrevWeightsInfluence(deltaList[[l]],
-                                  nodeValue[[l - 1]])
-        if (l > 2) {
+                                  nodeValue[[layer2nvIndex(l - 1)]])
+        stopifnot(dim(weightsInfluenceList[[l]]) == dim(neuralnet$weights[[l]]))
+        if (l > 1) {
           deltaList[[l - 1]] <-
             getPrevDelta(deltaList[[l]],
-                         rawNodeValue[[l - 1]],
+                         rawNodeValue[[layer2nvIndex(l - 1)]],
                          neuralnet$weights[[l]], neuralnet$dActfct)
+          stopifnot(dim(deltaList[[l - 1]]) == dim(neuralnet$bias[[l - 1]]))
         }
       }
 
       newBias <-
-        mapply(calculateNewBias, neuralnet$bias, deltaList[-1],
+        mapply(calculateNewBias, neuralnet$bias, deltaList,
                learning_rate, N,
                SIMPLIFY = F)
       newWeights <-
         mapply(calculateNewWeights, neuralnet$weights,
-               weightsInfluenceList[-1], learning_rate,
+               weightsInfluenceList, learning_rate,
                lambda, N, SIMPLIFY = F)
 
       neuralnet$bias <- newBias
@@ -109,5 +127,6 @@ sgdAlg <- function(neuralnet, training_data, learning_rate, lambda) {
   training_data_list <- lapply(training_data,
                                \(td) c(neuralnet$calculate(td$input),
                                        list(expectedOutput=td$expectedOutput)))
+  #print(training_data_list)
   backprop(training_data_list)
 }

@@ -145,19 +145,22 @@ public = list(
   calculate = function(input) {
     stopifnot("input size doesn't fit inputlayer size" = length(input) == self$inputsize)
 
-    rawNodeValues <- list(input)
-    nodeValues <- list(input)
+    rawNodeValues <- list()
+    nodeValues <- list()
     output <- input
+
+    rawNodeValues[[1]] <- input
+    nodeValues[[1]] <- input
 
     for(i in 1:self$nrhiddenlayers) {
       #weights
       output <- self$weights[[i]]%*%output
       #bias
       output <- output + self$bias[[i]]
-      rawNodeValues <- append(rawNodeValues, output)
+      rawNodeValues[[length(rawNodeValues) + 1]] <- output
       #apply the activation function
       output <- sapply(output, self$actfct)
-      nodeValues <- append(nodeValues, output)
+      nodeValues[[length(nodeValues) + 1]] <- output
     }
 
     output <- self$weights[[self$nrhiddenlayers + 1]] %*% output
