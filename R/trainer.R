@@ -91,13 +91,14 @@ public = list(
       expectedOutput <- training_data$expectedOutput
       rawNodeValue <- training_data$rawNodeValues
       nodeValue <- training_data$nodeValues
+      output <- training_data$output
 
       deltaList <- lapply(seq(L), \(x) NULL)
       weightsInfluenceList <- lapply(seq(L + 1), \(x) NULL)
 
       lastXInfluence <-
         getLastXInfluence(expectedOutput,
-                          nodeValue[[layer2nvIndex(L + 1)]],
+                          output,
                           neuralnet$weights[[L + 1]])
 
       deltaList[[L]] <-
@@ -108,7 +109,7 @@ public = list(
 
       weightsInfluenceList[[L + 1]] <-
         getLastWeightsInfluence( expectedOutput,
-                                 nodeValue[[layer2nvIndex(L + 1)]],
+                                 output,
                                  nodeValue[[layer2nvIndex(L)]])
       #print(nodeValue)
       #print(dim(weightsInfluenceList[[L + 1]]))

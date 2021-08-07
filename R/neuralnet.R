@@ -168,6 +168,10 @@ public = list(
     output <- sapply(output, self$outputfct)
     nodeValues <- append(nodeValues, output)
 
+    if (self$category == "classification") {
+      output <- which.max(output)
+    }
+
     list(rawNodeValues = rawNodeValues,
          nodeValues = nodeValues,
          output = output)
