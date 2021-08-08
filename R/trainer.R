@@ -127,7 +127,6 @@ public = list(
       #print(td$expectedOutput)
       accuracyFunc(netOutput, td$expectedOutput)
     })
-    print(accuracyVals)
     sum(accuracyVals) / length(private$test_data)
   },
 
@@ -140,7 +139,7 @@ public = list(
     getLastWeightsInfluence <-
       private$getLastWeightsInfluenceL[[neuralnet$category]]
 
-    for(training_data in private$training_data) {
+    for(training_data in sample(private$training_data)) {
       #print(training_data)
       netCalcResult <- neuralnet$calculate(training_data$input)
 
@@ -159,7 +158,7 @@ public = list(
 
       deltaList[[L]] <-
         private$getLastDelta(lastXInfluence,
-                          rawNodeValue[[L]],
+                          rawNodeValue[[private$layer2nvIndex(L)]],
                           neuralnet$dActfct)
       stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
 
