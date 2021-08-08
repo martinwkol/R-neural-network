@@ -27,7 +27,7 @@ private = list(
     regression = function(expectedOutput, netOutput, prevNodeValues) {
       #print(prevNodeValues)
       -2 * (expectedOutput - netOutput) * t(prevNodeValues)
-    }
+    },
     classification = function(expectedOutput, netOutput, prevNodeValues) {
       #print(prevNodeValues)
       -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
@@ -67,9 +67,9 @@ public = list(
     self$lambda <- lambda
   },
 
-  getTrainingData <- function() self$training_data
-  getLearningRate <- function() self$learning_rate
-  getLambda <- function() self$lambda
+  getTrainingData = function() self$training_data,
+  getLearningRate = function() self$learning_rate,
+  getLambda = function() self$lambda,
 
 
   train = function(neuralnet) {

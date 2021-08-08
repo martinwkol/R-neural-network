@@ -21,27 +21,31 @@ private = list(
     number_of_items <- nums[2]
 
     # not important
-    # rows <- nums[3]
-    # columns <- nums[4]
+    rows <- nums[3]
+    columns <- nums[4]
+    num_pixels <- rows * columns
 
-    pixels <- readBin(file_obj, integer(),
-                      n = number_of_items, size = 1,
-                      endian = "big")
+    images <- list()
+    for(i in seq(number_of_items)) {
+      pixels <- readBin(file_obj, integer(), n = num_pixels,
+                        size = 1, signed = F, endian = "big")
+      images[[length(images) + 1]] <- pixels / 255
+    }
     close(file_obj)
 
-    pixels
+    images
   }
 ),
 
 public = list(
-  trainingData = list(),
-  testData = list(),
+  training_data = NULL,
+  test_data = NULL,
   initialize = function(training_labels_fn, training_images_fn,
                         test_labels_fn, test_images_fn) {
-    training_labels <- self$load_labels(training_labels_fn)
-    training_images <- self$load_images(training_images_fn)
-    test_labels <- self$load_labels(test_labels_fn)
-    test_images <- self$load_images(test_images_fn)
+    training_labels <- private$load_labels(training_labels_fn)
+    training_images <- private$load_images(training_images_fn)
+    test_labels <- private$load_labels(test_labels_fn)
+    test_images <- private$load_images(test_images_fn)
 
     self$training_data <- mapply(\(label, image)
                                 list(input=image,
