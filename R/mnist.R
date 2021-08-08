@@ -11,7 +11,7 @@ private = list(
                       endian = "big")
     close(file_obj)
 
-    labels
+    labels + 1
   },
 
   load_images = function(filename) {

@@ -6,7 +6,7 @@ predefinedactivation <- list(
 )
 predefinedactivationDriv <- list(
   ReLU = function(x) {as.integer(x > 0)},
-  sigmoid = function(x) {predefinedactivation$sigmoid(x)(1 - predefinedactivation$sigmoid(x))},
+  sigmoid = function(x) {predefinedactivation$sigmoid(x) * (1 - predefinedactivation$sigmoid(x))},
   tanh = function(x) {1/cosh(x)^2}
 )
 
@@ -92,6 +92,8 @@ public = list(
       stopifnot("Specified activation function is not implemented." = !is.null(predefinedactivation[[activationfct]]))
       self$actfct <- predefinedactivation[[activationfct]]
       self$dActfct <- predefinedactivationDriv[[activationfct]]
+      print(self$actfct)
+      print(self$dActfct)
     } else if (class(activationfct) == "function") {
       stopifnot("Derivative of activation function is missing" = class(dActivationfct) == "function")
       self$actfct <- activationfct
@@ -108,7 +110,7 @@ public = list(
                 implemented." = !is.null(predefinedactivation[[outputfct]]))
       self$outputfct <- predefinedactivation[[outputfct]]
     } else if (class(outputfct) == "function") {
-      self$actfct <- outputfct
+      self$outputfct <- outputfct
     } else {
       stop("outputfct must be a character, function or NULL")
     }
@@ -161,12 +163,14 @@ public = list(
       #apply the activation function
       output <- sapply(output, self$actfct)
       nodeValues[[length(nodeValues) + 1]] <- output
+
+      #print(output)
     }
 
     output <- self$weights[[self$nrhiddenlayers + 1]] %*% output
-    rawNodeValues <- append(rawNodeValues, output)
+    rawNodeValues[[length(rawNodeValues) + 1]] <- output
     output <- sapply(output, self$outputfct)
-    nodeValues <- append(nodeValues, output)
+    nodeValues[[length(nodeValues) + 1]] <- output
 
     if (self$category == "classification") {
       output <- which.max(output)
