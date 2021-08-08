@@ -123,7 +123,8 @@ public = list(
     layers <- layers[-1]
     for (lsize in layers) {
       #add the weights, TO DO: initialize weights with other values
-      self$weights <- c(self$weights, list(matrix(0.5, lsize, lastsize)))
+      matrix_entries <- rnorm(lsize * lastsize, 0, lsize**-0.5)
+      self$weights <- c(self$weights, list(matrix(matrix_entries, lsize, lastsize)))
       lastsize <- lsize
       #create bias TO DO: initialize bias
       self$bias <- c(self$bias, list(rep(0, lsize)))
