@@ -1,6 +1,7 @@
 Trainer <- R6::R6Class("Trainer",
 private = list(
   training_data = list(),
+  test_data = list(),
   learning_rate = 0,
   lambda = 0,
 
@@ -59,14 +60,18 @@ private = list(
 
 ),
 public = list(
-  initialize = function(training_data, learning_rate, lambda) {
+  initialize = function(training_data, test_data, learning_rate, lambda) {
     private$training_data <- training_data
+    private$test_data <- test_data
     private$learning_rate <- learning_rate
     private$lambda <- lambda
   },
 
   setTrainingData = function(training_data) {
     private$training_data <- training_data
+  },
+  setTestData = function(test_data) {
+    private$test_data <- test_data
   },
   setLearningRate = function(learning_rate) {
     private$learning_rate <- learning_rate
@@ -76,16 +81,38 @@ public = list(
   },
 
   getTrainingData = function() private$training_data,
+  getTestData = function() private$test_data,
   getLearningRate = function() private$learning_rate,
   getLambda = function() private$lambda,
 
+  test = function(neuralnet) {
+    accuracyFunc <- NULL
+    if(neuralnet$category == "classification") {
+      accuracyFunc <- function(netOutput, expectedOutput)
+        as.double(netOutput == expectedOutput)
+    } else {
+      accuracyFunc <- function(netOutput, expectedOutput)
+        min((netOutput - expectedOutput)**2, 1)
+    }
+    accuracyVals <- sapply(private$test_data, function(td) {
+      #print(td)
+      netResult <- neuralnet$calculate(td$input)
+      netOutput <- netResult$output
+      #print(netResult)
+      #print(netOutput)
+      #print(td$expectedOutput)
+      accuracyFunc(netOutput, td$expectedOutput)
+    })
+    print(accuracyVals)
+    sum(accuracyVals) / length(private$test_data)
+  },
 
   train = function(neuralnet) {
     training_data_list <- lapply(private$training_data, function(td) {
         c(neuralnet$calculate(td$input),
           list(expectedOutput=td$expectedOutput))
     })
-    N <- length(training_data_list)
+    N <- length(private$training_data)
     L <- length(neuralnet$weights) - 1
 
     getLastXInfluence <-
