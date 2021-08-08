@@ -161,9 +161,23 @@ public = list(
       output <- output + self$bias[[i]]
       rawNodeValues[[length(rawNodeValues) + 1]] <- output
       #apply the activation function
+      'if(!all(!is.nan(output))) {
+        print(any(is.nan(self$weights[[i]])))
+        print(any(is.nan(self$bias[[i]])))
+        print(self$weights[[i]])
+        print(self$bias[[i]])
+        print("Before Actf")
+        stop()
+      }'
+
       output <- sapply(output, self$actfct)
       nodeValues[[length(nodeValues) + 1]] <- output
 
+      'if(!all(!is.nan(output))) {
+        print("After Actf")
+        stop()
+      }'
+      #stopifnot(all(!is.nan(output)))
       #print(output)
     }
 
@@ -171,6 +185,8 @@ public = list(
     rawNodeValues[[length(rawNodeValues) + 1]] <- output
     output <- sapply(output, self$outputfct)
     nodeValues[[length(nodeValues) + 1]] <- output
+
+    stopifnot(all(!is.nan(output)))
 
     if (self$category == "classification") {
       output <- which.max(output)

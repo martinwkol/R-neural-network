@@ -10,7 +10,7 @@ private = list(
       -2 * (expectedOutput - netOutput) * t(lastWeights)
     },
     classification = function(expectedOutput, netOutput, lastWeights) {
-      M <- function(x) exp(x) / sum(x)
+      M <- function(x) exp(x) / sum(exp(x))
       #print(expectedOutput)
       #print(dim(lastWeights[expectedOutput,]))
       #print(dim(t(lastWeights)))
@@ -38,7 +38,29 @@ private = list(
     },
     classification = function(expectedOutput, netOutput, prevNodeValues) {
       #print(prevNodeValues)
-      M <- function(x) exp(x) / sum(x)
+      M <- function(x) exp(x) / sum(exp(x))
+
+      'stopifnot(all(!is.nan(as.double(1:length(netOutput) == expectedOutput))))
+      stopifnot(all(!is.nan(M(netOutput))))
+      stopifnot(all(!is.nan(t(prevNodeValues))))
+      stopifnot(all(!is.nan(as.double(1:length(netOutput) == expectedOutput) - M(netOutput))))
+      #stopifnot(all(!is.nan(-(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues))))
+      result <- -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
+      if (!all(!is.nan(result))) {
+        print("------------------------------------")
+        print(as.double(1:length(netOutput) == expectedOutput))
+        print("------------------------------------")
+        print(netOutput)
+        print("------------------------------------")
+        print(t(prevNodeValues))
+        print("------------------------------------")
+        print(result)
+        print("------------------------------------")
+        print("------------------------------------")
+
+        stop()
+      }'
+
       -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
     }
   ),
@@ -47,11 +69,13 @@ private = list(
   },
 
   calculateNewBias = function(oldBias, delta, N) {
+    stopifnot(!all(is.nan(delta)))
     oldBias - private$learning_rate * delta / N
   },
   calculateNewWeights = function(oldWeights, weightsInfluence, N) {
     #print(weightsInfluence)
     #print(oldWeights)
+    stopifnot(!all(is.nan(weightsInfluence)))
     change <- weightsInfluence / N + 2 * private$lambda * oldWeights
     oldWeights - private$learning_rate * change
   },
@@ -108,10 +132,6 @@ public = list(
   },
 
   train = function(neuralnet) {
-    training_data_list <- lapply(private$training_data, function(td) {
-        c(neuralnet$calculate(td$input),
-          list(expectedOutput=td$expectedOutput))
-    })
     N <- length(private$training_data)
     L <- length(neuralnet$weights) - 1
 
@@ -120,13 +140,14 @@ public = list(
     getLastWeightsInfluence <-
       private$getLastWeightsInfluenceL[[neuralnet$category]]
 
-    for(training_data in training_data_list) {
+    for(training_data in private$training_data) {
       #print(training_data)
+      netCalcResult <- neuralnet$calculate(training_data$input)
 
       expectedOutput <- training_data$expectedOutput
-      rawNodeValue <- training_data$rawNodeValues
-      nodeValue <- training_data$nodeValues
-      output <- training_data$output
+      rawNodeValue <- netCalcResult$rawNodeValues
+      nodeValue <- netCalcResult$nodeValues
+      output <- netCalcResult$output
 
       deltaList <- lapply(seq(L), \(x) NULL)
       weightsInfluenceList <- lapply(seq(L + 1), \(x) NULL)
@@ -151,18 +172,35 @@ public = list(
       #print(dim(neuralnet$weights[[L + 1]]))
       stopifnot(dim(weightsInfluenceList[[L + 1]]) == dim(neuralnet$weights[[L + 1]]))
 
+      if(!all(!is.nan(weightsInfluenceList[[L + 1]]))) {
+        print(str_c("Weights: ", L + 1))
+        stop()
+      }
+
+      if(!all(!is.nan(deltaList[[L]]))) {
+        print(str_c("Delta: ", L))
+        stop()
+      }
 
       for(l in rev(seq(L))) {
         weightsInfluenceList[[l]] <-
           private$getPrevWeightsInfluence(deltaList[[l]],
                                   nodeValue[[private$layer2nvIndex(l - 1)]])
         stopifnot(dim(weightsInfluenceList[[l]]) == dim(neuralnet$weights[[l]]))
+        if(!all(!is.nan(weightsInfluenceList[[l]]))) {
+          print(str_c("Weights: ", l))
+          stop()
+        }
         if (l > 1) {
           deltaList[[l - 1]] <-
             private$getPrevDelta(deltaList[[l]],
                          rawNodeValue[[private$layer2nvIndex(l - 1)]],
                          neuralnet$weights[[l]], neuralnet$dActfct)
           stopifnot(dim(deltaList[[l - 1]]) == dim(neuralnet$bias[[l - 1]]))
+          if(!all(!is.nan(weightsInfluenceList[[l - 1]]))) {
+            print(str_c("Delta: ", l - 1))
+            stop()
+          }
         }
       }
 
