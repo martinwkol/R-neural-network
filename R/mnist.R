@@ -47,13 +47,13 @@ public = list(
     test_labels <- private$load_labels(test_labels_fn)
     test_images <- private$load_images(test_images_fn)
 
-    self$training_data <- mapply(\(label, image)
+    self$training_data <- mapply(function(label, image)
                                 list(input=image,
                                      expectedOutput=label),
                                 training_labels,
                                 training_images,
                                 SIMPLIFY = F)
-    self$test_data <-     mapply(\(label, image)
+    self$test_data <-     mapply(function(label, image)
                                 list(input=image,
                                      expectedOutput=label),
                                 test_labels,
