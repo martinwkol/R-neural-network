@@ -68,16 +68,17 @@ private = list(
     delta %*% t(prevNodeValues)
   },
 
-  calculateNewBias = function(oldBias, delta, N) {
+  calculateNewBias = function(oldBias, delta, N, learning_rate) {
     stopifnot(!all(is.nan(delta)))
-    oldBias - private$learning_rate * delta / N
+    oldBias - learning_rate * delta / N
   },
-  calculateNewWeights = function(oldWeights, weightsInfluence, N) {
+  calculateNewWeights = function(oldWeights, weightsInfluence, N,
+                                 learning_rate, lambda) {
     #print(weightsInfluence)
     #print(oldWeights)
     stopifnot(!all(is.nan(weightsInfluence)))
-    change <- weightsInfluence / N + 2 * private$lambda * oldWeights
-    oldWeights - private$learning_rate * change
+    change <- weightsInfluence / N + 2 * lambda * oldWeights
+    oldWeights - learning_rate * change
   },
 
   layer2nvIndex = function(layer) layer + 1
@@ -109,7 +110,8 @@ public = list(
   getLearningRate = function() private$learning_rate,
   getLambda = function() private$lambda,
 
-  test = function(neuralnet) {
+  test = function(neuralnet, N) {
+    N <- min(N, length(private$test_data))
     accuracyFunc <- NULL
     if(neuralnet$category == "classification") {
       accuracyFunc <- function(netOutput, expectedOutput)
@@ -118,7 +120,7 @@ public = list(
       accuracyFunc <- function(netOutput, expectedOutput)
         min((netOutput - expectedOutput)**2, 1)
     }
-    accuracyVals <- sapply(private$test_data, function(td) {
+    accuracyVals <- sapply(sample(private$test_data, N), function(td) {
       #print(td)
       netResult <- neuralnet$calculate(td$input)
       netOutput <- netResult$output
@@ -127,11 +129,10 @@ public = list(
       #print(td$expectedOutput)
       accuracyFunc(netOutput, td$expectedOutput)
     })
-    sum(accuracyVals) / length(private$test_data)
+    sum(accuracyVals) / N
   },
 
-  train = function(neuralnet) {
-    N <- length(private$training_data)
+  train = function(neuralnet, learning_rate, lambda, N) {
     L <- length(neuralnet$weights) - 1
 
     getLastXInfluence <-
@@ -139,7 +140,7 @@ public = list(
     getLastWeightsInfluence <-
       private$getLastWeightsInfluenceL[[neuralnet$category]]
 
-    for(training_data in sample(private$training_data)) {
+    for(training_data in sample(private$training_data, N, replace = T)) {
       #print(training_data)
       netCalcResult <- neuralnet$calculate(training_data$input)
 
@@ -204,11 +205,13 @@ public = list(
       }
 
       newBias <-
-        mapply(private$calculateNewBias, neuralnet$bias, deltaList, N,
+        mapply(private$calculateNewBias, neuralnet$bias,
+               deltaList, N, learning_rate,
                SIMPLIFY = F)
       newWeights <-
         mapply(private$calculateNewWeights, neuralnet$weights,
-               weightsInfluenceList, N, SIMPLIFY = F)
+               weightsInfluenceList, N, learning_rate, lambda,
+               SIMPLIFY = F)
 
       neuralnet$bias <- newBias
       neuralnet$weights <- newWeights
