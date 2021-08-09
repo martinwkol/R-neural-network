@@ -1,83 +1,7 @@
 OptimiserSGD <- R6::R6Class("OptimiserSGD",
 private = list(
   learning_rate = 0,
-  lambda = 0,
-
-  getLastXInfluenceL = list(
-    regression = function(expectedOutput, netOutput, lastWeights) {
-      -2 * (expectedOutput - netOutput) * t(lastWeights)
-    },
-    classification = function(expectedOutput, netOutput, lastWeights) {
-      M <- function(x) exp(x) / sum(exp(x))
-      #print(expectedOutput)
-      #print(dim(lastWeights[expectedOutput,]))
-      #print(dim(t(lastWeights)))
-      #print(dim(M(netOutput)))
-      #print("\n")
-      -(lastWeights[expectedOutput,] - t(lastWeights) %*% M(netOutput))
-    }
-  ),
-
-  getLastDelta = function(lastXInfluence, secLastRawNodeValues, dActfct) {
-    #print(dActfct)
-    lastXInfluence * dActfct(secLastRawNodeValues)
-  },
-  getPrevDelta = function(delta, prevRawNodeValues, weights, dActfct) {
-    #print(t(weights))
-    #print(delta)
-    #print(dActfct)
-    (t(weights) %*% delta) * dActfct(prevRawNodeValues)
-  },
-
-  getLastWeightsInfluenceL = list(
-    regression = function(expectedOutput, netOutput, prevNodeValues) {
-      -2 * (expectedOutput - netOutput) * t(prevNodeValues)
-    },
-    classification = function(expectedOutput, netOutput, prevNodeValues) {
-      #print(prevNodeValues)
-      M <- function(x) exp(x) / sum(exp(x))
-
-      'stopifnot(all(!is.nan(as.double(1:length(netOutput) == expectedOutput))))
-      stopifnot(all(!is.nan(M(netOutput))))
-      stopifnot(all(!is.nan(t(prevNodeValues))))
-      stopifnot(all(!is.nan(as.double(1:length(netOutput) == expectedOutput) - M(netOutput))))
-      #stopifnot(all(!is.nan(-(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues))))
-      result <- -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
-      if (!all(!is.nan(result))) {
-        print("------------------------------------")
-        print(as.double(1:length(netOutput) == expectedOutput))
-        print("------------------------------------")
-        print(netOutput)
-        print("------------------------------------")
-        print(t(prevNodeValues))
-        print("------------------------------------")
-        print(result)
-        print("------------------------------------")
-        print("------------------------------------")
-
-        stop()
-      }'
-
-      -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
-    }
-  ),
-  getPrevWeightsInfluence = function(delta, prevNodeValues) {
-    delta %*% t(prevNodeValues)
-  },
-
-  calculateBiasUpdate = function(oldBias, delta, N, learning_rate) {
-    stopifnot(!all(is.nan(delta)))
-    learning_rate * delta / N
-  },
-  calculateWeightUpdate = function(oldWeights, weightsInfluence, N,
-                                 learning_rate, lambda) {
-    #print(weightsInfluence)
-    #print(oldWeights)
-    stopifnot(!all(is.nan(weightsInfluence)))
-    change <- weightsInfluence / N + 2 * lambda * oldWeights
-    learning_rate * change
-  }
-
+  lambda = 0
 ),
 public = list(
   initialize = function(learning_rate, lambda) {
@@ -104,9 +28,9 @@ public = list(
     lambda <- private$lambda
 
     getLastXInfluence <-
-      private$getLastXInfluenceL[[neuralnet$category]]
+      getLastXInfluenceL[[neuralnet$category]]
     getLastWeightsInfluence <-
-      private$getLastWeightsInfluenceL[[neuralnet$category]]
+      getLastWeightsInfluenceL[[neuralnet$category]]
 
     for(training_data in sample(training_data)) {
       #print(training_data)
@@ -126,7 +50,7 @@ public = list(
                           neuralnet$weights[[L + 1]])
 
       deltaList[[L]] <-
-        private$getLastDelta(lastXInfluence,
+        getLastDelta(lastXInfluence,
                              rawNodeValue[[layer2nvIndex(L)]],
                              neuralnet$dActfct)
       stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
@@ -152,7 +76,7 @@ public = list(
 
       for(l in rev(seq(L))) {
         weightsInfluenceList[[l]] <-
-          private$getPrevWeightsInfluence(deltaList[[l]],
+          getPrevWeightsInfluence(deltaList[[l]],
                                           nodeValue[[layer2nvIndex(l - 1)]])
         stopifnot(dim(weightsInfluenceList[[l]]) == dim(neuralnet$weights[[l]]))
         if(!all(!is.nan(weightsInfluenceList[[l]]))) {
@@ -161,7 +85,7 @@ public = list(
         }
         if (l > 1) {
           deltaList[[l - 1]] <-
-            private$getPrevDelta(deltaList[[l]],
+            getPrevDelta(deltaList[[l]],
                                  rawNodeValue[[layer2nvIndex(l - 1)]],
                                  neuralnet$weights[[l]], neuralnet$dActfct)
           stopifnot(dim(deltaList[[l - 1]]) == dim(neuralnet$bias[[l - 1]]))
@@ -173,11 +97,11 @@ public = list(
       }
 
       biasUpdates <-
-        mapply(private$calculateBiasUpdate, neuralnet$bias,
+        mapply(calculateBiasUpdate, neuralnet$bias,
                deltaList, N, learning_rate,
                SIMPLIFY = F)
       weightUpdates <-
-        mapply(private$calculateWeightUpdate, neuralnet$weights,
+        mapply(calculateWeightUpdate, neuralnet$weights,
                weightsInfluenceList, N, learning_rate, lambda,
                SIMPLIFY = F)
 
