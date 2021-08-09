@@ -31,7 +31,6 @@ private = list(
 
   getLastWeightsInfluenceL = list(
     regression = function(expectedOutput, netOutput, prevNodeValues) {
-      #print(prevNodeValues)
       -2 * (expectedOutput - netOutput) * t(prevNodeValues)
     },
     classification = function(expectedOutput, netOutput, prevNodeValues) {
@@ -95,10 +94,10 @@ public = list(
   getLearningRate = function() private$learning_rate,
   getLambda = function() private$lambda,
 
-  optim = function(neuralnet, training_data) {
+  optim = function(neuralnet, training_data, N = 0) {
     layer2nvIndex <- function(layer) layer + 1
 
-    N <- length(training_data)
+    N <- max(N, length(training_data))
     L <- length(neuralnet$weights) - 1
 
     learning_rate <- private$learning_rate
@@ -118,8 +117,8 @@ public = list(
       nodeValue <- netCalcResult$nodeValues
       output <- netCalcResult$output
 
-      deltaList <- lapply(seq(L), function(x) NULL)
-      weightsInfluenceList <- lapply(seq(L + 1), function(x) NULL)
+      deltaList <- list()
+      weightsInfluenceList <- list()
 
       lastXInfluence <-
         getLastXInfluence(expectedOutput,
