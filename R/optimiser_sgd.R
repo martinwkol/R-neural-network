@@ -65,17 +65,17 @@ private = list(
     delta %*% t(prevNodeValues)
   },
 
-  calculateNewBias = function(oldBias, delta, N, learning_rate) {
+  calculateBiasUpdate = function(oldBias, delta, N, learning_rate) {
     stopifnot(!all(is.nan(delta)))
-    oldBias - learning_rate * delta / N
+    learning_rate * delta / N
   },
-  calculateNewWeights = function(oldWeights, weightsInfluence, N,
+  calculateWeightUpdate = function(oldWeights, weightsInfluence, N,
                                  learning_rate, lambda) {
     #print(weightsInfluence)
     #print(oldWeights)
     stopifnot(!all(is.nan(weightsInfluence)))
     change <- weightsInfluence / N + 2 * lambda * oldWeights
-    oldWeights - learning_rate * change
+    learning_rate * change
   }
 
 ),
@@ -172,14 +172,19 @@ public = list(
         }
       }
 
-      newBias <-
-        mapply(private$calculateNewBias, neuralnet$bias,
+      biasUpdates <-
+        mapply(private$calculateBiasUpdate, neuralnet$bias,
                deltaList, N, learning_rate,
                SIMPLIFY = F)
-      newWeights <-
-        mapply(private$calculateNewWeights, neuralnet$weights,
+      weightUpdates <-
+        mapply(private$calculateWeightUpdate, neuralnet$weights,
                weightsInfluenceList, N, learning_rate, lambda,
                SIMPLIFY = F)
+
+      newBias <- mapply(`-`, neuralnet$bias, biasUpdates,
+                        SIMPLIFY = F)
+      newWeights <- mapply(`-`, neuralnet$weights, weightUpdates,
+                        SIMPLIFY = F)
 
       neuralnet$bias <- newBias
       neuralnet$weights <- newWeights
