@@ -10,7 +10,8 @@ private = list(
   best_test_result = -Inf
 ),
 public = list(
-  initialize = function(neuralnet, optimiser, training_data, test_data,
+  initialize = function(neuralnet, optimiser,
+                        training_data = NULL, test_data = NULL,
                         accuracy_measurement = NULL) {
     stopifnot("The neural network is null" = !is.null(neuralnet))
     stopifnot("The optimiser is null" = !is.null(optimiser))
@@ -46,7 +47,7 @@ public = list(
   getTrainingData = function() private$training_data,
   getTestData = function() private$test_data,
 
-  seperateIntoTrainingTest = function(data, test_percentage = 0.15) {
+  seperate = function(data, test_percentage = 0.15) {
     stopifnot("Test percentage out of range" = 0 <= test_percentage && test_percentage <= 1)
 
     shuffled <- sample(data)
