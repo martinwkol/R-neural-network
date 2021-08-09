@@ -1,3 +1,18 @@
+lossFunctionList = list(
+  regression = function(expectedOutput, netOutput) {
+    (expectedOutput - netOutput) ** 2
+  },
+  classification = function(expectedOutput, netOutput, lastWeights) {
+    M <- function(x) exp(x) / sum(exp(x))
+    #print(expectedOutput)
+    #print(dim(lastWeights[expectedOutput,]))
+    #print(dim(t(lastWeights)))
+    #print(dim(M(netOutput)))
+    #print("\n")
+    -log(M(netOutput)[expectedOutput])
+  }
+)
+
 getLastXInfluenceL = list(
   regression = function(expectedOutput, netOutput, lastWeights) {
     -2 * (expectedOutput - netOutput) * t(lastWeights)
@@ -64,7 +79,7 @@ getPrevWeightsInfluence = function(delta, prevNodeValues) {
 
 calculateBiasUpdate = function(oldBias, delta, N, learning_rate) {
   stopifnot(!all(is.nan(delta)))
-  learning_rate * delta / N
+  learning_rate * delta
 }
 
 calculateWeightUpdate = function(oldWeights, weightsInfluence, N,
@@ -72,6 +87,6 @@ calculateWeightUpdate = function(oldWeights, weightsInfluence, N,
   #print(weightsInfluence)
   #print(oldWeights)
   stopifnot(!all(is.nan(weightsInfluence)))
-  change <- weightsInfluence / N + 2 * lambda * oldWeights
+  change <- weightsInfluence + 2 * lambda * oldWeights
   learning_rate * change
 }
