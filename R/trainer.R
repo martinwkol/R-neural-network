@@ -7,7 +7,8 @@ private = list(
   accuracy_measurement = NULL,
 
   last_test_result = NULL,
-  best_test_result = -Inf
+  best_test_result = -Inf,
+  best_neuralnet = NULL
 ),
 public = list(
   initialize = function(neuralnet, optimiser,
@@ -37,6 +38,16 @@ public = list(
     self$reset()
   },
 
+  setNeuralnet = function(neuralnet) {
+    stopifnot("The neural network is null" = !is.null(neuralnet))
+    private$neuralnet <- neuralnet
+    private$optimiser$reset()
+  },
+  setOptimiser = function(optimiser) {
+    stopifnot("The optimiser is null" = !is.null(optimiser))
+    private$optimiser <- optimiser
+    private$optimiser$reset()
+  },
   setTrainingData = function(training_data) {
     private$training_data <- training_data
   },
@@ -46,6 +57,13 @@ public = list(
 
   getTrainingData = function() private$training_data,
   getTestData = function() private$test_data,
+  getBestNeuralnet = function() private$best_neuralnet,
+
+  swapWithBestNeuralnet = function() {
+    if (!is.null(private$best_neuralnet)) {
+      self$setNeuralnet(private$best_neuralnet)
+    }
+  },
 
   seperate = function(data, test_percentage = 0.15) {
     stopifnot("Test percentage out of range" = 0 <= test_percentage && test_percentage <= 1)
@@ -70,7 +88,10 @@ public = list(
       private$accuracy_measurement(netOutput, td$expectedOutput)
     })
     private$last_test_result <- sum(accuracyVals) / N
-    private$best_test_result <- max(private$best_test_result, private$last_test_result)
+    if (private$last_test_result > private$best_test_result) {
+      private$best_test_result <- private$last_test_result
+      private$best_neuralnet <- rlang::duplicate(private$neuralnet)
+    }
     private$last_test_result
   },
 
@@ -143,5 +164,7 @@ public = list(
   reset = function() {
     private$last_test_result <- NULL
     private$best_test_result <- -Inf
+    private$best_neuralnet <- NULL
+    private$optimiser$reset()
   }
 ))

@@ -113,6 +113,8 @@ public = list(
       neuralnet$bias <- newBias
       neuralnet$weights <- newWeights
     }
-  }
+  },
+
+  reset = function() { return() }
 )
 )
