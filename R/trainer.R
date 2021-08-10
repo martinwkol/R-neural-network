@@ -1,7 +1,13 @@
+#' Trainer class
+#'
+#' @description
+#' This class is responsible for managing the training
+#' process of a given network for a given optimizer.
+#'
 Trainer <- R6::R6Class("Trainer",
 private = list(
   neuralnet = NULL,
-  optimiser = NULL,
+  optimizer = NULL,
   training_data = list(),
   test_data = list(),
   accuracy_measurement = NULL,
@@ -11,17 +17,17 @@ private = list(
   best_neuralnet = NULL
 ),
 public = list(
-  initialize = function(neuralnet, optimiser,
+  initialize = function(neuralnet, optimizer,
                         training_data = NULL, test_data = NULL,
                         accuracy_measurement = NULL) {
     stopifnot("The neural network is null" = !is.null(neuralnet))
-    stopifnot("The optimiser is null" = !is.null(optimiser))
+    stopifnot("The optimizer is null" = !is.null(optimizer))
     stopifnot("An accuracy_measurement function is missing" =
                 neuralnet$category == "classification" ||
                 !is.null(accuracy_measurement))
 
     private$neuralnet <- neuralnet
-    private$optimiser <- optimiser
+    private$optimizer <- optimizer
     private$training_data <- training_data
     private$test_data <- test_data
 
@@ -41,12 +47,12 @@ public = list(
   setNeuralnet = function(neuralnet) {
     stopifnot("The neural network is null" = !is.null(neuralnet))
     private$neuralnet <- neuralnet
-    private$optimiser$reset()
+    self$reset()
   },
-  setOptimiser = function(optimiser) {
-    stopifnot("The optimiser is null" = !is.null(optimiser))
-    private$optimiser <- optimiser
-    private$optimiser$reset()
+  setOptimizer = function(optimizer) {
+    stopifnot("The optimizer is null" = !is.null(optimizer))
+    private$optimizer <- optimizer
+    private$optimizer$reset()
   },
   setTrainingData = function(training_data) {
     private$training_data <- training_data
@@ -95,15 +101,21 @@ public = list(
     private$last_test_result
   },
 
-  #' train - Stochastic Gradient Descent
   #'
-  #' train implements an Algorithm for training a \code{?NeuralNet} Neural Network
-  #' using Stochastic Gradient Descent.
+  #' @description
+  #' train trains the neural network of the trainer with the given optimizer
   #'
-  #' @param neuralnet A R6 Neural Network that will be trained with the given data
-  #' @param training_data a data set used to train the Neural Network
-  #' @param learing_rate the learning rate to be used by the Algorithm
-  #' @param lamda a lambda to be used by the Algorithm
+  #' @param epochs integer; the number of epochs, the network will be trained
+  #' @param training_per_epoch integer; the amout of training data that will be used for an epoch
+  #' @param use_early_stopping logical; if true, early stopping is enabled
+  #' @param es_test_frequency integer; if early stopping is enabled,
+  #' test the performance of the network every \code{es_test_frequency} training sessions
+  #' @param es_test_size integer; if early stopping is enabled and the performance of
+  #' the network is to be evaluated, test the network with \code{es_test_size} test objects
+  #' @param es_minimal_improvement double; if early stopping is enabled, stop the training,
+  #' if the measured success ratio of the network didn't improve by at least
+  #' \code{es_minimal_improvement} in comparison to the best measured success ratio
+  #' for this network. Negative values are allowed.
   #' @seealso ?NeuralNet
   #' @export
   train = function(epochs, training_per_epoch = Inf, use_early_stopping = F, es_test_frequency = 5000,
@@ -130,7 +142,7 @@ public = list(
         while(start_index <= length(shuffled_td)) {
           end_index <- min(start_index + es_test_frequency - 1, length(shuffled_td))
 
-          private$optimiser$optim(private$neuralnet,
+          private$optimizer$optim(private$neuralnet,
                                   shuffled_td[start_index:end_index],
                                   N = length(shuffled_td))
 
@@ -153,7 +165,7 @@ public = list(
 
       for (epoch in seq(epochs)) {
         shuffled_td <- sample(private$training_data)[seq(training_per_epoch)]
-        private$optimiser$optim(private$neuralnet, shuffled_td)
+        private$optimizer$optim(private$neuralnet, shuffled_td)
       }
 
     }
@@ -165,6 +177,6 @@ public = list(
     private$last_test_result <- NULL
     private$best_test_result <- -Inf
     private$best_neuralnet <- NULL
-    private$optimiser$reset()
+    private$optimizer$reset()
   }
 ))

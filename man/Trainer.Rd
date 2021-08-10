@@ -2,11 +2,10 @@
 % Please edit documentation in R/trainer.R
 \name{Trainer}
 \alias{Trainer}
-\title{train - Stochastic Gradient Descent}
+\title{Trainer class}
 \description{
-train - Stochastic Gradient Descent
-
-train - Stochastic Gradient Descent
+This class is responsible for managing the training
+process of a given network for a given optimizer.
 }
 \seealso{
 ?NeuralNet
@@ -15,12 +14,18 @@ train - Stochastic Gradient Descent
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Trainer$new()}}
+\item \href{#method-setNeuralnet}{\code{Trainer$setNeuralnet()}}
+\item \href{#method-setoptimizer}{\code{Trainer$setoptimizer()}}
 \item \href{#method-setTrainingData}{\code{Trainer$setTrainingData()}}
 \item \href{#method-setTestData}{\code{Trainer$setTestData()}}
 \item \href{#method-getTrainingData}{\code{Trainer$getTrainingData()}}
 \item \href{#method-getTestData}{\code{Trainer$getTestData()}}
+\item \href{#method-getBestNeuralnet}{\code{Trainer$getBestNeuralnet()}}
+\item \href{#method-swapWithBestNeuralnet}{\code{Trainer$swapWithBestNeuralnet()}}
+\item \href{#method-seperate}{\code{Trainer$seperate()}}
 \item \href{#method-test}{\code{Trainer$test()}}
 \item \href{#method-train}{\code{Trainer$train()}}
+\item \href{#method-reset}{\code{Trainer$reset()}}
 \item \href{#method-clone}{\code{Trainer$clone()}}
 }
 }
@@ -28,10 +33,32 @@ train - Stochastic Gradient Descent
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-train implements an Algorithm for training a \code{?NeuralNet} Neural Network
-using Stochastic Gradient Descent.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Trainer$new(optimiser, training_data, test_data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$new(
+  neuralnet,
+  optimizer,
+  training_data = NULL,
+  test_data = NULL,
+  accuracy_measurement = NULL
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setNeuralnet"></a>}}
+\if{latex}{\out{\hypertarget{method-setNeuralnet}{}}}
+\subsection{Method \code{setNeuralnet()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$setNeuralnet(neuralnet)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setoptimizer"></a>}}
+\if{latex}{\out{\hypertarget{method-setoptimizer}{}}}
+\subsection{Method \code{setoptimizer()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$setoptimizer(optimizer)}\if{html}{\out{</div>}}
 }
 
 }
@@ -72,11 +99,38 @@ using Stochastic Gradient Descent.
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getBestNeuralnet"></a>}}
+\if{latex}{\out{\hypertarget{method-getBestNeuralnet}{}}}
+\subsection{Method \code{getBestNeuralnet()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$getBestNeuralnet()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-swapWithBestNeuralnet"></a>}}
+\if{latex}{\out{\hypertarget{method-swapWithBestNeuralnet}{}}}
+\subsection{Method \code{swapWithBestNeuralnet()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$swapWithBestNeuralnet()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-seperate"></a>}}
+\if{latex}{\out{\hypertarget{method-seperate}{}}}
+\subsection{Method \code{seperate()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$seperate(data, test_percentage = 0.15)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-test"></a>}}
 \if{latex}{\out{\hypertarget{method-test}{}}}
 \subsection{Method \code{test()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Trainer$test(neuralnet, N)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$test(N)}\if{html}{\out{</div>}}
 }
 
 }
@@ -84,23 +138,49 @@ using Stochastic Gradient Descent.
 \if{html}{\out{<a id="method-train"></a>}}
 \if{latex}{\out{\hypertarget{method-train}{}}}
 \subsection{Method \code{train()}}{
+train trains the neural network of the trainer with the given optimizer
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Trainer$train(neuralnet, learning_rate, lambda, N)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$train(
+  epochs,
+  training_per_epoch = Inf,
+  use_early_stopping = F,
+  es_test_frequency = 5000,
+  es_test_size = 500,
+  es_minimal_improvement = 0
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{neuralnet}}{A R6 Neural Network that will be trained with the given data}
+\item{\code{epochs}}{integer; the number of epochs, the network will be trained}
 
-\item{\code{training_data}}{a data set used to train the Neural Network}
+\item{\code{training_per_epoch}}{integer; the amout of training data that will be used for an epoch}
 
-\item{\code{learing_rate}}{the learning rate to be used by the Algorithm}
+\item{\code{use_early_stopping}}{logical; if true, early stopping is enabled}
 
-\item{\code{lamda}}{a lambda to be used by the Algorithm}
+\item{\code{es_test_frequency}}{integer; if early stopping is enabled,
+test the performance of the network every \code{es_test_frequency} training sessions}
+
+\item{\code{es_test_size}}{integer; if early stopping is enabled and the performance of
+the network is to be evaluated, test the network with \code{es_test_size} test objects}
+
+\item{\code{es_minimal_improvement}}{double; if early stopping is enabled, stop the training,
+if the measured success ratio of the network didn't improve by at least
+\code{es_minimal_improvement} in comparison to the best measured success ratio
+for this network. Negative values are allowed.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-reset"></a>}}
+\if{latex}{\out{\hypertarget{method-reset}{}}}
+\subsection{Method \code{reset()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$reset()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
