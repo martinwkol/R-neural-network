@@ -329,8 +329,7 @@ public = list(
           end_index <- min(start_index + es_test_frequency - 1, length(shuffled_td))
 
           private$optimizer$optim(private$neuralnet,
-                                  shuffled_td[start_index:end_index],
-                                  N = length(shuffled_td))
+                                  shuffled_td[start_index:end_index])
 
           trained_data_since_test <- trained_data_since_test +
                                     (end_index - start_index + 1)
@@ -395,8 +394,6 @@ public = list(
 #'
 #' @export
 combineData <- function(inputs, targets) {
-  #stopifnot("'inputs' is not a list" = is.list(inputs))
-  #stopifnot("'targets' is not a list" = is.list(targets))
   stopifnot("'inputs' and 'targets' have a different length" = length(inputs) == length(targets))
 
   combinded <- mapply(function(i, t) list(input = i, expectedOutput = t),

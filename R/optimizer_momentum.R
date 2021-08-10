@@ -1,42 +1,106 @@
+#' Optimizer Stochastic Gradient Descent with Momentum
+#'
+#' @description
+#' This class is responsible for performing the
+#' optimization method "Stochastic Gradient Descent"
+#' with the momentum optimization
+#' on a neural network for a given list of training data
+#'
 OptimizerMomentum <- R6::R6Class("OptimizerMomentum",
 private = list(
   learning_rate = 0,
-  lambda = 0,
+  regularization_rate = 0,
   momentum_term = 0,
 
   weightMomentum = NULL,
   biasMomentum = NULL
 ),
 public = list(
-  initialize = function(learning_rate, lambda, momentum_term = 0.9) {
+  #' @description
+  #' Initializes a new OptimizerMomentum object
+  #'
+  #' @param learning_rate The learning rate used by the optimization method
+  #' @param regularization_rate The regularization rate used by the optimization method
+  #' @param momentum_term The momentum term used by the optimization method
+  #'
+  #' @export
+  initialize = function(learning_rate, regularization_rate, momentum_term = 0.9) {
     private$learning_rate <- learning_rate
-    private$lambda <- lambda
+    private$regularization_rate <- regularization_rate
     private$momentum_term <- momentum_term
 
     self$reset()
   },
+
+  #' @description
+  #' Sets the learning rate
+  #'
+  #' @param learning_rate The new learning rate
+  #'
+  #' @export
   setLearningRate = function(learning_rate) {
     private$learning_rate <- learning_rate
   },
-  setLambda = function(lambda) {
-    private$lambda <- lambda
+
+  #' @description
+  #' Sets the regularization rate
+  #'
+  #' @param regularization_rate The new regularization rate
+  #'
+  #' @export
+  setRegularizationRate = function(regularization_rate) {
+    private$regularization_rate <- regularization_rate
   },
+
+  #' @description
+  #' Sets the momentum term
+  #'
+  #' @param momentum_term The new momentum term
+  #'
+  #' @export
   setMomentumTerm = function(momentum_term) {
     private$momentum_term <- momentum_term
   },
 
+  #' @description
+  #' Returns the learning rate
+  #'
+  #' @return The learning rate
+  #'
+  #' @export
   getLearningRate = function() private$learning_rate,
-  getLambda = function() private$lambda,
+
+  #' @description
+  #' Returns the regularization rate
+  #'
+  #' @return The regularization rate
+  #'
+  #' @export
+  getRegularizationRate = function() private$regularization_rate,
+
+  #' @description
+  #' Returns the momentum term
+  #'
+  #' @return The momentum term
+  #'
+  #' @export
   getMomentumTerm = function() private$momentum_term,
 
-  optim = function(neuralnet, training_data, N = 0) {
+  #' @description
+  #' Performs the optimization algorithm
+  #'
+  #' @param neuralnet The neural network to be trained
+  #' @param training_data The training data used for training the
+  #' network
+  #'
+  #' @export
+  optim = function(neuralnet, training_data) {
     layer2nvIndex <- function(layer) layer + 1
 
-    N <- max(N, length(training_data))
     L <- length(neuralnet$weights) - 1
 
     learning_rate <- private$learning_rate
-    lambda <- private$lambda
+    regularization_rate <- private$regularization_rate
 
     getLastXInfluence <-
       getLastXInfluenceL[[neuralnet$category]]
@@ -109,11 +173,11 @@ public = list(
 
       biasUpdates <-
         mapply(calculateBiasUpdate, neuralnet$bias,
-               deltaList, N, learning_rate,
+               deltaList, learning_rate,
                SIMPLIFY = F)
       weightUpdates <-
         mapply(calculateWeightUpdate, neuralnet$weights,
-               weightsInfluenceList, N, learning_rate, lambda,
+               weightsInfluenceList, learning_rate, regularization_rate,
                SIMPLIFY = F)
 
       # Add momentum
@@ -139,6 +203,10 @@ public = list(
     }
   },
 
+  #' @description
+  #' Deletes info from earlier optimization processes
+  #'
+  #' @export
   reset = function() {
     private$weightMomentum <- NULL
     private$biasMomentum <- NULL
