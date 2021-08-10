@@ -23,13 +23,13 @@ private = list(
   #' The list of the test data
   test_data = list(),
 
-  #' @field prediction_correct
+  #' @field accuracy_tester
   #' A method that compares the output of the
   #' neural network for a given input
   #' with the expected output.
   #' If the output of the network is considered correct,
   #' the method returns true, otherwise false
-  prediction_correct = NULL,
+  accuracy_tester = NULL,
 
 
   #' @field last_test_result
@@ -56,41 +56,41 @@ public = list(
   #' @param optimizer The optimizer used for training the neural network
   #' @param training_data The list of the training data
   #' @param test_data The list of the test data
-  #' @param prediction_correct A method that must compare
+  #' @param accuracy_tester A method that must compare
   #' the output of the neural network for a given input
   #' with the expected output.
   #' If the output of the network is considered correct,
   #' the method must returns true, otherwise false.
-  #' If \code{prediction_correct} is \code{NULL}, and the
+  #' If \code{accuracy_tester} is \code{NULL}, and the
   #' given neural network uses classification, the Trainer
-  #' generates the standard \code{prediction_correct} method
+  #' generates the standard \code{accuracy_tester} method
   #' for classification (recomended).
   #' If the neural network uses regression, a custom
-  #' \code{prediction_correct} method must be given
+  #' \code{accuracy_tester} method must be given
   #' @seealso ?NeuralNet
   #' @export
   initialize = function(neuralnet, optimizer,
                         training_data = NULL, test_data = NULL,
-                        prediction_correct = NULL) {
+                        accuracy_tester = NULL) {
     stopifnot("The neural network is null" = !is.null(neuralnet))
     stopifnot("The optimizer is null" = !is.null(optimizer))
-    stopifnot("An prediction_correct function is missing" =
+    stopifnot("An accuracy_tester function is missing" =
                 neuralnet$category == "classification" ||
-                !is.null(prediction_correct))
+                !is.null(accuracy_tester))
 
     private$neuralnet <- neuralnet
     private$optimizer <- optimizer
     private$training_data <- training_data
     private$test_data <- test_data
 
-    if (is.null(prediction_correct)) {
+    if (is.null(accuracy_tester)) {
       if (neuralnet$category == "classification") {
-        private$prediction_correct <- measurement_classification()
+        private$accuracy_tester <- accuracy_tester_classification()
       } else {
-        stop("An prediction_correct function is missing")
+        stop("An accuracy_tester function is missing")
       }
     } else {
-      private$prediction_correct <- prediction_correct
+      private$accuracy_tester <- accuracy_tester
     }
 
     self$reset()
@@ -254,7 +254,7 @@ public = list(
   #' of the test data list. It will do so by calculating the
   #' output of the network for the first \code{N} inputs in the
   #' test data list and comparing the network output with the
-  #' expected output using the \code{prediction_correct} method.
+  #' expected output using the \code{accuracy_tester} method.
   #' The method will then calculate the proportion of correctly
   #' calculated outputs and save the result. If the test result
   #' is better than the previous best test result, the method
@@ -281,7 +281,7 @@ public = list(
       #print(netResult)
       #print(netOutput)
       #print(td$expectedOutput)
-      as.integer(private$prediction_correct(netOutput, td$expectedOutput))
+      as.integer(private$accuracy_tester(netOutput, td$expectedOutput))
     })
     private$last_test_result <- sum(accuracyVals) / N
     if (private$last_test_result > private$best_test_result) {
