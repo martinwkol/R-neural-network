@@ -1,3 +1,5 @@
+softmax <- function(x) exp(x) / sum(exp(x))
+
 #' getLastXInfluenceL
 #'
 #' @description
@@ -17,8 +19,7 @@ getLastXInfluenceL = list(
     -2 * (expectedOutput - netOutput) * t(lastWeights)
   },
   classification = function(expectedOutput, netOutput, lastWeights) {
-    M <- function(x) exp(x) / sum(exp(x))
-    -(lastWeights[expectedOutput,] - t(lastWeights) %*% M(netOutput))
+    -(lastWeights[expectedOutput,] - t(lastWeights) %*% softmax(netOutput))
   }
 )
 
@@ -78,8 +79,7 @@ getLastWeightsInfluenceL = list(
     -2 * (expectedOutput - netOutput) * t(prevNodeValues)
   },
   classification = function(expectedOutput, netOutput, prevNodeValues) {
-    M <- function(x) exp(x) / sum(exp(x))
-    -(as.double(1:length(netOutput) == expectedOutput) - M(netOutput)) %*% t(prevNodeValues)
+    -(as.double(1:length(netOutput) == expectedOutput) - softmax(netOutput)) %*% t(prevNodeValues)
   }
 )
 
