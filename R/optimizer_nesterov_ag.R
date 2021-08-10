@@ -191,7 +191,7 @@ OptimizerNesterovAG <- R6::R6Class("OptimizerNesterovAG",
        }
 
        biasUpdates <-
-         mapply(calculateBiasUpdate, neuralnet$bias,
+         mapply(calculateBiasUpdate,
                 deltaList, learning_rate,
                 SIMPLIFY = F)
        weightUpdates <-

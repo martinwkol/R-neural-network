@@ -172,7 +172,7 @@ public = list(
       }
 
       biasUpdates <-
-        mapply(calculateBiasUpdate, neuralnet$bias,
+        mapply(calculateBiasUpdate,
                deltaList, learning_rate,
                SIMPLIFY = F)
       weightUpdates <-
