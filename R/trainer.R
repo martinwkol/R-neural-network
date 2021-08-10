@@ -245,7 +245,7 @@ public = list(
   #'
   #' @export
   generateTrainingTest = function(inputs, targets, test_percentage = 0.15) {
-    combined <- Trainer$combine(inputs, targets)
+    combined <- combineData(inputs, targets)
     self$separateData(combinded, test_percentage)
   },
 
@@ -270,7 +270,7 @@ public = list(
   #' @return proportion of correctly calculated outputs
   #'
   #' @export
-  test = function(N) {
+  test = function(N = Inf) {
     stopifnot("No test data is given" = !is.null(private$test_data))
 
     N <- min(N, length(private$test_data))
