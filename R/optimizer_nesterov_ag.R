@@ -1,4 +1,4 @@
-OptimiserNesterovAG <- R6::R6Class("OptimiserNesterovAG",
+OptimizerNesterovAG <- R6::R6Class("OptimizerNesterovAG",
  private = list(
    learning_rate = 0,
    lambda = 0,

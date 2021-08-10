@@ -4,75 +4,214 @@
 #' This class is responsible for managing the training
 #' process of a given network for a given optimizer.
 #'
+#' @export
 Trainer <- R6::R6Class("Trainer",
 private = list(
+  #' @field neuralnet
+  #' The neural network to be trained
   neuralnet = NULL,
-  optimizer = NULL,
-  training_data = list(),
-  test_data = list(),
-  accuracy_measurement = NULL,
 
+  #' @field optimizer
+  #' The optimizer used for training the neural network
+  optimizer = NULL,
+
+  #' @field training_data
+  #' The list of the training data
+  training_data = list(),
+
+  #' @field test_data
+  #' The list of the test data
+  test_data = list(),
+
+  #' @field prediction_correct
+  #' A method that compares the output of the
+  #' neural network for a given input
+  #' with the expected output.
+  #' If the output of the network is considered correct,
+  #' the method returns true, otherwise false
+  prediction_correct = NULL,
+
+
+  #' @field last_test_result
+  #' Stores the last test result scored
+  #' with the neural network
   last_test_result = NULL,
+
+  #' @field best_test_result
+  #' Stores the best test result scored
+  #' with the neural network (since the last reset)
   best_test_result = -Inf,
+
+  #' @field best_test_result
+  #' Stores a copy of the neural network, that scored the
+  #' best test result (since the last reset)
   best_neuralnet = NULL
 ),
 public = list(
+  #' @description
+  #' Initializes a new Trainer. It resets the given
+  #' optimizer.
+  #'
+  #' @param neuralnet The neural network to be trained
+  #' @param optimizer The optimizer used for training the neural network
+  #' @param training_data The list of the training data
+  #' @param test_data The list of the test data
+  #' @param prediction_correct A method that must compare
+  #' the output of the neural network for a given input
+  #' with the expected output.
+  #' If the output of the network is considered correct,
+  #' the method must returns true, otherwise false.
+  #' If \code{prediction_correct} is \code{NULL}, and the
+  #' given neural network uses classification, the Trainer
+  #' generates the standard \code{prediction_correct} method
+  #' for classification (recomended).
+  #' If the neural network uses regression, a custom
+  #' \code{prediction_correct} method must be given
+  #' @seealso ?NeuralNet
+  #' @export
   initialize = function(neuralnet, optimizer,
                         training_data = NULL, test_data = NULL,
-                        accuracy_measurement = NULL) {
+                        prediction_correct = NULL) {
     stopifnot("The neural network is null" = !is.null(neuralnet))
     stopifnot("The optimizer is null" = !is.null(optimizer))
-    stopifnot("An accuracy_measurement function is missing" =
+    stopifnot("An prediction_correct function is missing" =
                 neuralnet$category == "classification" ||
-                !is.null(accuracy_measurement))
+                !is.null(prediction_correct))
 
     private$neuralnet <- neuralnet
     private$optimizer <- optimizer
     private$training_data <- training_data
     private$test_data <- test_data
 
-    if (is.null(accuracy_measurement)) {
+    if (is.null(prediction_correct)) {
       if (neuralnet$category == "classification") {
-        private$accuracy_measurement <- measurement_classification()
+        private$prediction_correct <- measurement_classification()
       } else {
-        stop("An accuracy_measurement function is missing")
+        stop("An prediction_correct function is missing")
       }
     } else {
-      private$accuracy_measurement <- accuracy_measurement
+      private$prediction_correct <- prediction_correct
     }
 
     self$reset()
   },
 
+  #' @description
+  #' Changes the neural network to train.
+  #' After the change of the network, the method
+  #' resets the optimiser and forgets the last test score,
+  #' the best test score and the best neural network
+  #'
+  #' @param neuralnet The new neural network to be trained
+  #'
+  #' @seealso ?NeuralNet
+  #' @export
   setNeuralnet = function(neuralnet) {
     stopifnot("The neural network is null" = !is.null(neuralnet))
     private$neuralnet <- neuralnet
     self$reset()
   },
+
+  #' @description
+  #' Changes the optimizer used for training the neural network
+  #' The method also resets the new optimizer
+  #'
+  #' @param optimizer The optimizer used for training
+  #' the neural network
+  #'
+  #' @export
   setOptimizer = function(optimizer) {
     stopifnot("The optimizer is null" = !is.null(optimizer))
     private$optimizer <- optimizer
     private$optimizer$reset()
   },
+
+  #' @description
+  #' Sets the training data
+  #'
+  #' @param training_data The list of the training data
+  #'
+  #' @export
   setTrainingData = function(training_data) {
     private$training_data <- training_data
   },
+
+  #' @description
+  #' Sets the test data
+  #'
+  #' @param test_data The list of the test data
+  #'
+  #' @export
   setTestData = function(test_data) {
     private$test_data <- test_data
   },
 
+
+  #' @return The list of the training data
+  #' If the Trainer doesn't have training data, it
+  #' returns \code{NULL}
+  #'
+  #' @export
   getTrainingData = function() private$training_data,
+  #' @return The list of the test data
+  #' If the Trainer doesn't have test data, it
+  #' returns \code{NULL}
+  #'
+  #' @export
   getTestData = function() private$test_data,
+  #' @return A copy of the neural network, that scored the
+  #' best test result. If no test was performed with the
+  #' current neural network (since the last reset), the
+  #' method returns \code{NULL}
+  #'
+  #' @export
   getBestNeuralnet = function() private$best_neuralnet,
 
+  #' @description
+  #' Swaps the currently used neural network with the
+  #' copy of the neural network, that scored the best
+  #' test result. If such a copy does not exists, the
+  #' method does nothing
+  #'
+  #' @export
   swapWithBestNeuralnet = function() {
     if (!is.null(private$best_neuralnet)) {
       self$setNeuralnet(private$best_neuralnet)
     }
   },
 
-  seperate = function(data, test_percentage = 0.15) {
+  #' @description
+  #' Separates the given data into training data and test data
+  #' The parameter \code{test_percentage} determines what portion
+  #' of the data will be used for testing and consequently
+  #' what portion will be used for training.
+  #' If the trainer already has training and / or test data,
+  #' the old data will be overwritten.
+  #'
+  #' @param data A list of lists that must each contain the
+  #' named components \code{input} and \code{expectedOutput};
+  #' The data to be separated into training data and test data
+  #' @param test_percentage The portion
+  #' of the data that will be used for testing
+  #'
+  #' @examples
+  #' data <- list(
+  #'   list(input = c(0.5, 0.5),
+  #'        expectedOutput = 2),
+  #'   list(input = c(0.1, 0.8),
+  #'        expectedOutput = 1)
+  #' )
+  #' trainer$separateData(data,
+  #'            test_percentage = 0.5)
+  #'
+  #' @export
+  separateData = function(data, test_percentage = 0.15) {
     stopifnot("Test percentage out of range" = 0 <= test_percentage && test_percentage <= 1)
+    for (d in data) {
+      stopifnot("Not every element of the datalist
+                has an input and an expected output
+                value" = all(c("input", "expectedOutput") %in% names(d)))
+    }
 
     shuffled <- sample(data)
     test_data_length <- round(length(data) * test_percentage)
@@ -80,6 +219,27 @@ public = list(
     private$training_data <- shuffled[(test_data_length + 1):length(data)]
   },
 
+  #' @description
+  #' Tests the neural network on the first \code{N} elements
+  #' of the test data list. It will do so by calculating the
+  #' output of the network for the first \code{N} inputs in the
+  #' test data list and comparing the network output with the
+  #' expected output using the \code{prediction_correct} method.
+  #' The method will then calculate the proportion of correctly
+  #' calculated outputs and save the result. If the test result
+  #' is better than the previous best test result, the method
+  #' will store the new best test result and save the current
+  #' network as the best network.
+  #' If the trainer does not have a test data list,
+  #' the method throws an error.
+  #'
+  #' @param N Number of tests to perform. If N is bigger than
+  #' the length of the test data list, the method will replace
+  #' N with the length of the test data list
+  #'
+  #' @return proportion of correctly calculated outputs
+  #'
+  #' @export
   test = function(N) {
     stopifnot("No test data is given" = !is.null(private$test_data))
 
@@ -91,7 +251,7 @@ public = list(
       #print(netResult)
       #print(netOutput)
       #print(td$expectedOutput)
-      private$accuracy_measurement(netOutput, td$expectedOutput)
+      as.integer(private$prediction_correct(netOutput, td$expectedOutput))
     })
     private$last_test_result <- sum(accuracyVals) / N
     if (private$last_test_result > private$best_test_result) {
@@ -101,7 +261,6 @@ public = list(
     private$last_test_result
   },
 
-  #'
   #' @description
   #' train trains the neural network of the trainer with the given optimizer
   #'
@@ -116,6 +275,10 @@ public = list(
   #' if the measured success ratio of the network didn't improve by at least
   #' \code{es_minimal_improvement} in comparison to the best measured success ratio
   #' for this network. Negative values are allowed.
+  #'
+  #' @return True if the training was completed, false otherwise
+  #' (early stopping)
+  #'
   #' @seealso ?NeuralNet
   #' @export
   train = function(epochs, training_per_epoch = Inf, use_early_stopping = F, es_test_frequency = 5000,
@@ -153,7 +316,7 @@ public = list(
             test_result <- self$test(es_test_size)
             diff <- test_result - private$best_test_result
             if (diff < es_minimal_improvement) {
-              return (T)
+              return (F)
             }
           }
 
@@ -170,9 +333,14 @@ public = list(
 
     }
 
-    return(F)
+    return(T)
   },
 
+  #' @description
+  #' The trainer forgets the last test result, the best test
+  #' result and the best network. The optimizer gets reset-ted.
+  #'
+  #' @export
   reset = function() {
     private$last_test_result <- NULL
     private$best_test_result <- -Inf

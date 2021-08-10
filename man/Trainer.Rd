@@ -7,22 +7,98 @@
 This class is responsible for managing the training
 process of a given network for a given optimizer.
 }
+\examples{
+
+## ------------------------------------------------
+## Method `Trainer$separateData`
+## ------------------------------------------------
+
+data <- list(
+  list(input = c(0.5, 0.5),
+       expectedOutput = 2),
+  list(input = c(0.1, 0.8),
+       expectedOutput = 1)
+)
+trainer$separateData(data,
+           test_percentage = 0.5)
+
+}
 \seealso{
 ?NeuralNet
+
+?NeuralNet
+
+?NeuralNet
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{neuralnet}}{The neural network to be trained}
+
+\item{\code{optimizer}}{The optimizer used for training the neural network}
+
+\item{\code{training_data}}{The list of the training data}
+
+\item{\code{test_data}}{The list of the test data}
+
+\item{\code{prediction_correct}}{A method that compares the output of the
+neural network for a given input
+with the expected output.
+If the output of the network is considered correct,
+the method returns true, otherwise false}
+
+\item{\code{last_test_result}}{Stores the last test result scored
+with the neural network}
+
+\item{\code{best_test_result}}{Stores the best test result scored
+with the neural network (since the last reset)}
+
+\item{\code{best_test_result}}{Stores a copy of the neural network, that scored the
+best test result (since the last reset)}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{neuralnet}}{The neural network to be trained}
+
+\item{\code{optimizer}}{The optimizer used for training the neural network}
+
+\item{\code{training_data}}{The list of the training data}
+
+\item{\code{test_data}}{The list of the test data}
+
+\item{\code{prediction_correct}}{A method that compares the output of the
+neural network for a given input
+with the expected output.
+If the output of the network is considered correct,
+the method returns true, otherwise false}
+
+\item{\code{last_test_result}}{Stores the last test result scored
+with the neural network}
+
+\item{\code{best_test_result}}{Stores the best test result scored
+with the neural network (since the last reset)}
+
+\item{\code{best_test_result}}{Stores a copy of the neural network, that scored the
+best test result (since the last reset)}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Trainer$new()}}
 \item \href{#method-setNeuralnet}{\code{Trainer$setNeuralnet()}}
-\item \href{#method-setoptimizer}{\code{Trainer$setoptimizer()}}
+\item \href{#method-setOptimizer}{\code{Trainer$setOptimizer()}}
 \item \href{#method-setTrainingData}{\code{Trainer$setTrainingData()}}
 \item \href{#method-setTestData}{\code{Trainer$setTestData()}}
 \item \href{#method-getTrainingData}{\code{Trainer$getTrainingData()}}
 \item \href{#method-getTestData}{\code{Trainer$getTestData()}}
 \item \href{#method-getBestNeuralnet}{\code{Trainer$getBestNeuralnet()}}
 \item \href{#method-swapWithBestNeuralnet}{\code{Trainer$swapWithBestNeuralnet()}}
-\item \href{#method-seperate}{\code{Trainer$seperate()}}
+\item \href{#method-separateData}{\code{Trainer$separateData()}}
 \item \href{#method-test}{\code{Trainer$test()}}
 \item \href{#method-train}{\code{Trainer$train()}}
 \item \href{#method-reset}{\code{Trainer$reset()}}
@@ -33,52 +109,116 @@ process of a given network for a given optimizer.
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initializes a new Trainer. It resets the given
+optimizer.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$new(
   neuralnet,
   optimizer,
   training_data = NULL,
   test_data = NULL,
-  accuracy_measurement = NULL
+  prediction_correct = NULL
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{neuralnet}}{The neural network to be trained}
+
+\item{\code{optimizer}}{The optimizer used for training the neural network}
+
+\item{\code{training_data}}{The list of the training data}
+
+\item{\code{test_data}}{The list of the test data}
+
+\item{\code{prediction_correct}}{A method that must compare
+the output of the neural network for a given input
+with the expected output.
+If the output of the network is considered correct,
+the method must returns true, otherwise false.
+If \code{prediction_correct} is \code{NULL}, and the
+given neural network uses classification, the Trainer
+generates the standard \code{prediction_correct} method
+for classification (recomended).
+If the neural network uses regression, a custom
+\code{prediction_correct} method must be given}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setNeuralnet"></a>}}
 \if{latex}{\out{\hypertarget{method-setNeuralnet}{}}}
 \subsection{Method \code{setNeuralnet()}}{
+Changes the neural network to train.
+After the change of the network, the method
+resets the optimiser and forgets the last test score,
+the best test score and the best neural network
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$setNeuralnet(neuralnet)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{neuralnet}}{The new neural network to be trained}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setoptimizer"></a>}}
-\if{latex}{\out{\hypertarget{method-setoptimizer}{}}}
-\subsection{Method \code{setoptimizer()}}{
+\if{html}{\out{<a id="method-setOptimizer"></a>}}
+\if{latex}{\out{\hypertarget{method-setOptimizer}{}}}
+\subsection{Method \code{setOptimizer()}}{
+Changes the optimizer used for training the neural network
+The method also resets the new optimizer
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Trainer$setoptimizer(optimizer)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$setOptimizer(optimizer)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{optimizer}}{The optimizer used for training
+the neural network}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setTrainingData"></a>}}
 \if{latex}{\out{\hypertarget{method-setTrainingData}{}}}
 \subsection{Method \code{setTrainingData()}}{
+Sets the training data
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$setTrainingData(training_data)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{training_data}}{The list of the training data}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setTestData"></a>}}
 \if{latex}{\out{\hypertarget{method-setTestData}{}}}
 \subsection{Method \code{setTestData()}}{
+Sets the test data
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$setTestData(test_data)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{test_data}}{The list of the test data}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getTrainingData"></a>}}
@@ -88,6 +228,11 @@ process of a given network for a given optimizer.
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$getTrainingData()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The list of the training data
+If the Trainer doesn't have training data, it
+returns \code{NULL}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getTestData"></a>}}
@@ -97,6 +242,11 @@ process of a given network for a given optimizer.
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$getTestData()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The list of the test data
+If the Trainer doesn't have test data, it
+returns \code{NULL}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getBestNeuralnet"></a>}}
@@ -106,22 +256,66 @@ process of a given network for a given optimizer.
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$getBestNeuralnet()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+A copy of the neural network, that scored the
+best test result. If no test was performed with the
+current neural network (since the last reset), the
+method returns \code{NULL}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-swapWithBestNeuralnet"></a>}}
 \if{latex}{\out{\hypertarget{method-swapWithBestNeuralnet}{}}}
 \subsection{Method \code{swapWithBestNeuralnet()}}{
+Swaps the currently used neural network with the
+copy of the neural network, that scored the best
+test result. If such a copy does not exists, the
+method does nothing
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$swapWithBestNeuralnet()}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-seperate"></a>}}
-\if{latex}{\out{\hypertarget{method-seperate}{}}}
-\subsection{Method \code{seperate()}}{
+\if{html}{\out{<a id="method-separateData"></a>}}
+\if{latex}{\out{\hypertarget{method-separateData}{}}}
+\subsection{Method \code{separateData()}}{
+Separates the given data into training data and test data
+The parameter \code{test_percentage} determines what portion
+of the data will be used for testing and consequently
+what portion will be used for training.
+If the trainer already has training and / or test data,
+the old data will be overwritten.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Trainer$seperate(data, test_percentage = 0.15)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$separateData(data, test_percentage = 0.15)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{data}}{A list of lists that must each contain the
+named components \code{input} and \code{expectedOutput};
+The data to be separated into training data and test data}
+
+\item{\code{test_percentage}}{The portion
+of the data that will be used for testing}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{data <- list(
+  list(input = c(0.5, 0.5),
+       expectedOutput = 2),
+  list(input = c(0.1, 0.8),
+       expectedOutput = 1)
+)
+trainer$separateData(data,
+           test_percentage = 0.5)
+
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -129,10 +323,34 @@ process of a given network for a given optimizer.
 \if{html}{\out{<a id="method-test"></a>}}
 \if{latex}{\out{\hypertarget{method-test}{}}}
 \subsection{Method \code{test()}}{
+Tests the neural network on the first \code{N} elements
+of the test data list. It will do so by calculating the
+output of the network for the first \code{N} inputs in the
+test data list and comparing the network output with the
+expected output using the \code{prediction_correct} method.
+The method will then calculate the proportion of correctly
+calculated outputs and save the result. If the test result
+is better than the previous best test result, the method
+will store the new best test result and save the current
+network as the best network.
+If the trainer does not have a test data list,
+the method throws an error.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$test(N)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{N}}{Number of tests to perform. If N is bigger than
+the length of the test data list, the method will replace
+N with the length of the test data list}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+proportion of correctly calculated outputs
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train"></a>}}
@@ -172,11 +390,17 @@ for this network. Negative values are allowed.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+True if the training was completed, false otherwise
+(early stopping)
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-reset"></a>}}
 \if{latex}{\out{\hypertarget{method-reset}{}}}
 \subsection{Method \code{reset()}}{
+The trainer forgets the last test result, the best test
+result and the best network. The optimizer gets reset-ted.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Trainer$reset()}\if{html}{\out{</div>}}
 }
