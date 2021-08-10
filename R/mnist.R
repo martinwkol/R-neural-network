@@ -47,18 +47,8 @@ public = list(
     test_labels <- private$load_labels(test_labels_fn)
     test_images <- private$load_images(test_images_fn)
 
-    self$training_data <- mapply(function(label, image)
-                                list(input=image,
-                                     expectedOutput=label),
-                                training_labels,
-                                training_images,
-                                SIMPLIFY = F)
-    self$test_data <-     mapply(function(label, image)
-                                list(input=image,
-                                     expectedOutput=label),
-                                test_labels,
-                                test_images,
-                                SIMPLIFY = F)
+    self$training_data <- combineData(training_images, training_labels)
+    self$test_data <-     combineData(test_images, test_labels)
   }
 ))
 

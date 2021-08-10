@@ -22,6 +22,19 @@ data <- list(
 trainer$separateData(data,
            test_percentage = 0.5)
 
+
+## ------------------------------------------------
+## Method `Trainer$generateTrainingTest`
+## ------------------------------------------------
+
+inputs <-
+  list(c(0.5, 0.5), c(0.1, 0.8))
+targets <-
+  list(2, 1)
+trainer$generateTrainingTest
+  (inputs, targets,
+   test_percentage = 0.5)
+
 }
 \seealso{
 ?NeuralNet
@@ -99,6 +112,7 @@ best test result (since the last reset)}
 \item \href{#method-getBestNeuralnet}{\code{Trainer$getBestNeuralnet()}}
 \item \href{#method-swapWithBestNeuralnet}{\code{Trainer$swapWithBestNeuralnet()}}
 \item \href{#method-separateData}{\code{Trainer$separateData()}}
+\item \href{#method-generateTrainingTest}{\code{Trainer$generateTrainingTest()}}
 \item \href{#method-test}{\code{Trainer$test()}}
 \item \href{#method-train}{\code{Trainer$train()}}
 \item \href{#method-reset}{\code{Trainer$reset()}}
@@ -312,6 +326,49 @@ of the data that will be used for testing}
 )
 trainer$separateData(data,
            test_percentage = 0.5)
+
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-generateTrainingTest"></a>}}
+\if{latex}{\out{\hypertarget{method-generateTrainingTest}{}}}
+\subsection{Method \code{generateTrainingTest()}}{
+Creates training data list and test data list from the given
+inputs and targets
+The parameter \code{test_percentage} determines what portion
+of the data will be used for testing and consequently
+what portion will be used for training.
+If the trainer already has training and / or test data,
+the old data will be overwritten.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$generateTrainingTest(inputs, targets, test_percentage = 0.15)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{inputs}}{A list with the input data}
+
+\item{\code{targets}}{A list with the target data}
+
+\item{\code{test_percentage}}{The portion
+of the data that will be used for testing}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{inputs <-
+  list(c(0.5, 0.5), c(0.1, 0.8))
+targets <-
+  list(2, 1)
+trainer$generateTrainingTest
+  (inputs, targets,
+   test_percentage = 0.5)
 
 }
 \if{html}{\out{</div>}}

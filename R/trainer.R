@@ -206,6 +206,7 @@ public = list(
   #'
   #' @export
   separateData = function(data, test_percentage = 0.15) {
+    stopifnot("data is not a list" = is.list(data))
     stopifnot("Test percentage out of range" = 0 <= test_percentage && test_percentage <= 1)
     for (d in data) {
       stopifnot("Not every element of the datalist
@@ -217,6 +218,35 @@ public = list(
     test_data_length <- round(length(data) * test_percentage)
     private$test_data <- shuffled[1:test_data_length]
     private$training_data <- shuffled[(test_data_length + 1):length(data)]
+  },
+
+  #' @description
+  #' Creates training data list and test data list from the given
+  #' inputs and targets
+  #' The parameter \code{test_percentage} determines what portion
+  #' of the data will be used for testing and consequently
+  #' what portion will be used for training.
+  #' If the trainer already has training and / or test data,
+  #' the old data will be overwritten.
+  #'
+  #' @param inputs A list with the input data
+  #' @param targets A list with the target data
+  #' @param test_percentage The portion
+  #' of the data that will be used for testing
+  #'
+  #' @examples
+  #' inputs <-
+  #'   list(c(0.5, 0.5), c(0.1, 0.8))
+  #' targets <-
+  #'   list(2, 1)
+  #' trainer$generateTrainingTest
+  #'   (inputs, targets,
+  #'    test_percentage = 0.5)
+  #'
+  #' @export
+  generateTrainingTest = function(inputs, targets, test_percentage = 0.15) {
+    combined <- Trainer$combine(inputs, targets)
+    self$separateData(combinded, test_percentage)
   },
 
   #' @description
@@ -348,3 +378,35 @@ public = list(
     private$optimizer$reset()
   }
 ))
+
+#' Combine input and target lists
+#'
+#' @description
+#' Combines the given inputs and targets into one list that
+#' can then be given to the trainer as a training / test data
+#' list.
+#'
+#' @param inputs A list with the input data
+#' @param targets A list with the target data
+#'
+#' @return The combined data list
+#'
+#' @examples
+#' inputs <-
+#'   list(c(0.5, 0.5), c(0.1, 0.8))
+#' targets <-
+#'   list(2, 1)
+#' combined <-
+#'   combineData
+#'     (inputs, targets)
+#'
+#' @export
+combineData <- function(inputs, targets) {
+  #stopifnot("'inputs' is not a list" = is.list(inputs))
+  #stopifnot("'targets' is not a list" = is.list(targets))
+  stopifnot("'inputs' and 'targets' have a different length" = length(inputs) == length(targets))
+
+  combinded <- mapply(function(i, t) list(input = i, expectedOutput = t),
+                      inputs, targets, SIMPLIFY = F)
+  combinded
+}

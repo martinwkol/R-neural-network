@@ -1,9 +1,18 @@
+#' Optimizer Stochastic Gradient Descent
+#'
+#' @description
+#' This class is responsible for performing the
+#' optimization algorithm on a neural network
+#' for given training data
+#'
 OptimizerSGD <- R6::R6Class("OptimizerSGD",
 private = list(
   learning_rate = 0,
   lambda = 0
 ),
 public = list(
+  #' @description
+  #'
   initialize = function(learning_rate, lambda) {
     private$learning_rate <- learning_rate
     private$lambda <- lambda
