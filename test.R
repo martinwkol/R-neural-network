@@ -32,7 +32,7 @@ trainer$setNeuralnet(nn)
 nn <- NeuralNet$new(c(784,200, 1), activationfct="ReLU", category="regression")
 optimizer <- OptimizerSGD$new(0.3, 0)
 trainer <- Trainer$new(nn, optimizer, mnist$training_data, mnist$test_data,
-                       measurement_regression_abs(0.5))
+                       accuracy_tester_regression_abs(0.5))
 
 trainer$train(100)
 trainer$train(500)
