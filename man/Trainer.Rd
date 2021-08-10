@@ -43,62 +43,6 @@ trainer$generateTrainingTest
 
 ?NeuralNet
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{neuralnet}}{The neural network to be trained}
-
-\item{\code{optimizer}}{The optimizer used for training the neural network}
-
-\item{\code{training_data}}{The list of the training data}
-
-\item{\code{test_data}}{The list of the test data}
-
-\item{\code{prediction_correct}}{A method that compares the output of the
-neural network for a given input
-with the expected output.
-If the output of the network is considered correct,
-the method returns true, otherwise false}
-
-\item{\code{last_test_result}}{Stores the last test result scored
-with the neural network}
-
-\item{\code{best_test_result}}{Stores the best test result scored
-with the neural network (since the last reset)}
-
-\item{\code{best_test_result}}{Stores a copy of the neural network, that scored the
-best test result (since the last reset)}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{neuralnet}}{The neural network to be trained}
-
-\item{\code{optimizer}}{The optimizer used for training the neural network}
-
-\item{\code{training_data}}{The list of the training data}
-
-\item{\code{test_data}}{The list of the test data}
-
-\item{\code{prediction_correct}}{A method that compares the output of the
-neural network for a given input
-with the expected output.
-If the output of the network is considered correct,
-the method returns true, otherwise false}
-
-\item{\code{last_test_result}}{Stores the last test result scored
-with the neural network}
-
-\item{\code{best_test_result}}{Stores the best test result scored
-with the neural network (since the last reset)}
-
-\item{\code{best_test_result}}{Stores a copy of the neural network, that scored the
-best test result (since the last reset)}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -131,7 +75,7 @@ optimizer.
   optimizer,
   training_data = NULL,
   test_data = NULL,
-  prediction_correct = NULL
+  accuracy_tester = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -146,17 +90,17 @@ optimizer.
 
 \item{\code{test_data}}{The list of the test data}
 
-\item{\code{prediction_correct}}{A method that must compare
+\item{\code{accuracy_tester}}{A method that must compare
 the output of the neural network for a given input
 with the expected output.
 If the output of the network is considered correct,
 the method must returns true, otherwise false.
-If \code{prediction_correct} is \code{NULL}, and the
+If \code{accuracy_tester} is \code{NULL}, and the
 given neural network uses classification, the Trainer
-generates the standard \code{prediction_correct} method
+generates the standard \code{accuracy_tester} method
 for classification (recomended).
 If the neural network uses regression, a custom
-\code{prediction_correct} method must be given}
+\code{accuracy_tester} method must be given}
 }
 \if{html}{\out{</div>}}
 }
@@ -384,7 +328,7 @@ Tests the neural network on the first \code{N} elements
 of the test data list. It will do so by calculating the
 output of the network for the first \code{N} inputs in the
 test data list and comparing the network output with the
-expected output using the \code{prediction_correct} method.
+expected output using the \code{accuracy_tester} method.
 The method will then calculate the proportion of correctly
 calculated outputs and save the result. If the test result
 is better than the previous best test result, the method
@@ -393,7 +337,7 @@ network as the best network.
 If the trainer does not have a test data list,
 the method throws an error.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Trainer$test(N)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$test(N = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

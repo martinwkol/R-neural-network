@@ -2,4 +2,7 @@
 
 export(NeuralNet)
 export(Trainer)
+export(accuracy_tester_classification)
+export(accuracy_tester_regression_abs)
+export(accuracy_tester_regression_rel)
 export(combineData)

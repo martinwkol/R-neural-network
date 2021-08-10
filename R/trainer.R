@@ -7,44 +7,37 @@
 #' @export
 Trainer <- R6::R6Class("Trainer",
 private = list(
-  #' @field neuralnet
-  #' The neural network to be trained
+  # The neural network to be trained
   neuralnet = NULL,
 
-  #' @field optimizer
-  #' The optimizer used for training the neural network
+  # The optimizer used for training the neural network
   optimizer = NULL,
 
-  #' @field training_data
-  #' The list of the training data
+  # The list of the training data
   training_data = list(),
 
-  #' @field test_data
-  #' The list of the test data
+  # The list of the test data
   test_data = list(),
 
-  #' @field accuracy_tester
-  #' A method that compares the output of the
-  #' neural network for a given input
-  #' with the expected output.
-  #' If the output of the network is considered correct,
-  #' the method returns true, otherwise false
+  # A method that compares the output of the
+  # neural network for a given input
+  # with the expected output.
+  # If the output of the network is considered correct,
+  # the method returns true, otherwise false
   accuracy_tester = NULL,
 
 
-  #' @field last_test_result
-  #' Stores the last test result scored
-  #' with the neural network
+
+  # Stores the last test result scored
+  # with the neural network
   last_test_result = NULL,
 
-  #' @field best_test_result
-  #' Stores the best test result scored
-  #' with the neural network (since the last reset)
+  # Stores the best test result scored
+  # with the neural network (since the last reset)
   best_test_result = -Inf,
 
-  #' @field best_test_result
-  #' Stores a copy of the neural network, that scored the
-  #' best test result (since the last reset)
+  # Stores a copy of the neural network, that scored the
+  # best test result (since the last reset)
   best_neuralnet = NULL
 ),
 public = list(
