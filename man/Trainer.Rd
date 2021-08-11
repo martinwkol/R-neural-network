@@ -4,10 +4,54 @@
 \alias{Trainer}
 \title{Trainer class}
 \description{
-This class is responsible for managing the training
-process of a given network for a given optimizer.
+This class is responsible for managing the training and the
+testing process of a given network for a given optimizer.
 }
 \examples{
+# ------------------------------------------------
+# Example 1
+# ------------------------------------------------
+optimizer <- OptimizerSGD$new(0.0005, 0)
+
+nn_cls <- NeuralNet$new(c(784,  200, 10),
+             category="classification")
+training_data <- list(
+   list(input = 1:784, expectedOutput = 2),
+   list(input = 784:1, expectedOutput = 10),
+   ...
+)
+training_data <- list(
+   list(input = 1:784 * 2, expectedOutput = 1),
+   ...
+)
+trainer1 <- Trainer$new(nn_cls, optimizer,
+                       training_data,
+                       test_data))
+
+trainer$train(epochs = 5)
+
+# ------------------------------------------------
+# Example 2
+# ------------------------------------------------
+optimizer <- OptimizerMomentum$new(0.0005, 0, 0.9)
+
+nn_reg <- NeuralNet$new(c(784,  200, 1),
+             category="regression"
+accuracy_tester <- accuracy_tester_regression_rel(0.1)
+inputs <- list(1:784, 784:1, 1:784 * 2, ...)
+targets <- list(5.7, 1.7, 10.7, ...)
+trainer2 <- Trainer$new(nn_cls, optimizer,
+                   accuracy_tester = accuracy_tester))
+trainer2$generateTrainingTest(inputs, targets,
+                   test_percentage = 0.1)
+trainer2$train(
+     epochs = 10,
+     use_early_stopping = T,
+     es_test_frequency = 1000,
+     es_test_size = 100,
+     es_minimal_improvement = -0.02)
+
+
 
 ## ------------------------------------------------
 ## Method `Trainer$separateData`
@@ -34,6 +78,44 @@ targets <-
 trainer$generateTrainingTest
   (inputs, targets,
    test_percentage = 0.5)
+
+
+## ------------------------------------------------
+## Method `Trainer$test`
+## ------------------------------------------------
+
+test_result <- trainer$test(500)
+test_result <- trainer$test()
+
+
+## ------------------------------------------------
+## Method `Trainer$train`
+## ------------------------------------------------
+
+trainer$train(epochs = 5)
+trainer$train(epochs = 1,
+     training_per_epoch = 1000)
+trainer$train(epochs = 10,
+     training_per_epoch = 1000)
+
+trainer$train(
+     epochs = 10,
+     use_early_stopping = T,
+     es_test_frequency = 1000,
+     es_test_size = 100,
+     es_minimal_improvement = -0.02)
+finished <- trainer$train(
+     epochs = 50,
+     training_per_epoch = 10000
+     use_early_stopping = T,
+     es_test_frequency = 1000,
+     es_test_size = 100,
+     es_minimal_improvement = -0.02)
+
+if (finished)
+     print("training was completed")
+else
+     print("training was aborted by early stopping")
 
 }
 \seealso{
@@ -379,6 +461,16 @@ N with the length of the test data list}
 \subsection{Returns}{
 proportion of correctly calculated outputs
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{test_result <- trainer$test(500)
+test_result <- trainer$test()
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-train"></a>}}
@@ -401,7 +493,8 @@ train trains the neural network of the trainer with the given optimizer
 \describe{
 \item{\code{epochs}}{integer; the number of epochs, the network will be trained}
 
-\item{\code{training_per_epoch}}{integer; the amout of training data that will be used for an epoch}
+\item{\code{training_per_epoch}}{integer; the amount of training data that will be used for an epoch
+if nothing is specified, the method will use all training data available}
 
 \item{\code{use_early_stopping}}{logical; if true, early stopping is enabled}
 
@@ -422,6 +515,38 @@ for this network. Negative values are allowed.}
 True if the training was completed, false otherwise
 (early stopping)
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{trainer$train(epochs = 5)
+trainer$train(epochs = 1,
+     training_per_epoch = 1000)
+trainer$train(epochs = 10,
+     training_per_epoch = 1000)
+
+trainer$train(
+     epochs = 10,
+     use_early_stopping = T,
+     es_test_frequency = 1000,
+     es_test_size = 100,
+     es_minimal_improvement = -0.02)
+finished <- trainer$train(
+     epochs = 50,
+     training_per_epoch = 10000
+     use_early_stopping = T,
+     es_test_frequency = 1000,
+     es_test_size = 100,
+     es_minimal_improvement = -0.02)
+
+if (finished)
+     print("training was completed")
+else
+     print("training was aborted by early stopping")
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-reset"></a>}}
