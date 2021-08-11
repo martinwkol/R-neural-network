@@ -20,7 +20,7 @@ training_data <- list(
    list(input = 784:1, expectedOutput = 10),
    ...
 )
-training_data <- list(
+test_data <- list(
    list(input = 1:784 * 2, expectedOutput = 1),
    ...
 )
@@ -29,6 +29,7 @@ trainer1 <- Trainer$new(nn_cls, optimizer,
                        test_data))
 
 trainer$train(epochs = 5)
+trainer$test()
 
 # ------------------------------------------------
 # Example 2
@@ -36,7 +37,7 @@ trainer$train(epochs = 5)
 optimizer <- OptimizerMomentum$new(0.0005, 0, 0.9)
 
 nn_reg <- NeuralNet$new(c(784,  200, 1),
-             category="regression"
+             category="regression")
 accuracy_tester <- accuracy_tester_regression_rel(0.1)
 inputs <- list(1:784, 784:1, 1:784 * 2, ...)
 targets <- list(5.7, 1.7, 10.7, ...)
@@ -50,7 +51,25 @@ trainer2$train(
      es_test_frequency = 1000,
      es_test_size = 100,
      es_minimal_improvement = -0.02)
+trainer$test(500)
 
+
+## ------------------------------------------------
+## Method `Trainer$new`
+## ------------------------------------------------
+
+training_data <- list(
+   list(input = 1:784, expectedOutput = 2),
+   list(input = 784:1, expectedOutput = 10),
+   ...
+)
+test_data <- list(
+   list(input = 1:784 * 2, expectedOutput = 1),
+   ...
+)
+trainer <- Trainer$new(nn_cls, optimizer,
+                       training_data,
+                       test_data))
 
 
 ## ------------------------------------------------
@@ -214,6 +233,26 @@ If the neural network uses regression, a custom
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{training_data <- list(
+   list(input = 1:784, expectedOutput = 2),
+   list(input = 784:1, expectedOutput = 10),
+   ...
+)
+test_data <- list(
+   list(input = 1:784 * 2, expectedOutput = 1),
+   ...
+)
+trainer <- Trainer$new(nn_cls, optimizer,
+                       training_data,
+                       test_data))
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setNeuralnet"></a>}}

@@ -183,6 +183,8 @@ public = list(
   #' filepath and filename used to save the image.
   #' @param image.type name of the filetype, if \code{image.save = TRUE} this
   #' filetype will be used to save the image.
+  #' @param labels logical value, should labels be shown in the image, recommended to
+  #' use \code{labels = FALSE} for large Neural Networs
   #'
   #'
   #' @details

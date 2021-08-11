@@ -84,8 +84,6 @@ between nodes.}
 
 \item{\code{dActfct}}{function to be used as derivative of the activation function.}
 
-\item{\code{outputfct}}{function to be used as activation function on the last layer.}
-
 \item{\code{category}}{either classification or regression}
 }
 \if{html}{\out{</div>}}
@@ -109,7 +107,6 @@ create a new R6 instance of a NeuralNetwork
   layers,
   activationfct = "ReLU",
   dActivationfct = NULL,
-  outputfct = NULL,
   category = "classification"
 )}\if{html}{\out{</div>}}
 }
@@ -126,12 +123,12 @@ other function, see \code{Activation Functions}.}
 the derivative of a custom Activation function, it is not checked for
 correcteness.}
 
+\item{\code{category}}{string matching valid category for Neural Network, either
+classification or regression.}
+
 \item{\code{outputfct}}{string matching predefined activation function or
 other a function, see \code{Activation Functions}, used as activation
 function for the last layer of nodes}
-
-\item{\code{category}}{string matching valid category for Neural Network, either
-classification or regression.}
 }
 \if{html}{\out{</div>}}
 }
@@ -212,7 +209,7 @@ plot an R6 NeuralNet using graphics and grDevices
   image.save = FALSE,
   image.filename = NULL,
   image.type = NULL,
-  lables = TRUE
+  labels = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -232,6 +229,9 @@ filepath and filename used to save the image.}
 
 \item{\code{image.type}}{name of the filetype, if \code{image.save = TRUE} this
 filetype will be used to save the image.}
+
+\item{\code{labels}}{logical value, should labels be shown in the image, recommended to
+use \code{labels = FALSE} for large Neural Networs}
 }
 \if{html}{\out{</div>}}
 }
