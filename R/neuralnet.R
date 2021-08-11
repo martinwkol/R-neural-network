@@ -418,7 +418,7 @@ public = list(
     graphics::points(x, y, pch = 21, cex = 3, bg = "white")
 
     #adding labels
-    if(lables)
+    if(labels)
       graphics::text(x, y, labels = l, pos = 3, offset = 1)
 
     # saving image
