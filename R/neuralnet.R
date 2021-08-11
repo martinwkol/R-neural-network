@@ -89,7 +89,7 @@ public = list(
 
     stopifnot("The neural network must at least have 2 layers: An input and an output layer"
               = length(layers) >= 2)
-
+    stopifnot("All layers must be greater than 0" = all(layers > 0))
     #choose activation function
     if(class(activationfct) == "character") {
       stopifnot("Specified activation function is not implemented." = !is.null(predefinedactivation[[activationfct]]))
