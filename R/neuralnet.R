@@ -155,7 +155,7 @@ public = list(
     rawNodeValues[[1]] <- input
     nodeValues[[1]] <- input
 
-    for(i in 1:self$nrhiddenlayers) {
+    for(i in seq_len(self$nrhiddenlayers)) {
       #weights
       output <- self$weights[[i]]%*%output
       #bias

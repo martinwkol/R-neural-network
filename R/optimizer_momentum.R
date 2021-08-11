@@ -141,6 +141,7 @@ public = list(
 
       if(!all(!is.nan(weightsInfluenceList[[L + 1]]))) {
         print(str_c("Weights: ", L + 1))
+        print(weightsInfluenceList[[L + 1]])
         stop()
       }
 

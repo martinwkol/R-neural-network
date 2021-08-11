@@ -140,18 +140,31 @@ public = list(
   },
 
 
+  #' @return The new neural network to be trained
+  #'
+  #' @export
+  getNeuralnet = function() private$neuralnet,
+
+  #' @return The optimizer used for training
+  #' the neural network
+  #'
+  #' @export
+  getOptimizer = function() private$optimizer,
+
   #' @return The list of the training data
   #' If the Trainer doesn't have training data, it
   #' returns \code{NULL}
   #'
   #' @export
   getTrainingData = function() private$training_data,
+
   #' @return The list of the test data
   #' If the Trainer doesn't have test data, it
   #' returns \code{NULL}
   #'
   #' @export
   getTestData = function() private$test_data,
+
   #' @return A copy of the neural network, that scored the
   #' best test result. If no test was performed with the
   #' current neural network (since the last reset), the
@@ -239,7 +252,7 @@ public = list(
   #' @export
   generateTrainingTest = function(inputs, targets, test_percentage = 0.15) {
     combined <- combineData(inputs, targets)
-    self$separateData(combinded, test_percentage)
+    self$separateData(combined, test_percentage)
   },
 
   #' @description
@@ -267,13 +280,10 @@ public = list(
     stopifnot("No test data is given" = !is.null(private$test_data))
 
     N <- min(N, length(private$test_data))
-    accuracyVals <- sapply(private$test_data[seq(N)], function(td) {
-      #print(td)
+    data_to_test <- private$test_data[seq(N)]
+    accuracyVals <- sapply(data_to_test, function(td) {
       netResult <- private$neuralnet$calculate(td$input)
       netOutput <- netResult$output
-      #print(netResult)
-      #print(netOutput)
-      #print(td$expectedOutput)
       as.integer(private$accuracy_tester(netOutput, td$expectedOutput))
     })
     private$last_test_result <- sum(accuracyVals) / N

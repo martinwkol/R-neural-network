@@ -89,6 +89,7 @@ public = list(
       nodeValue <- netCalcResult$nodeValues
       output <- netCalcResult$output
 
+
       deltaList <- list()
       weightsInfluenceList <- list()
 
@@ -114,7 +115,6 @@ public = list(
         print(weightsInfluenceList[[L + 1]])
         stop()
       }
-
       if(!all(!is.nan(deltaList[[L]]))) {
         print(str_c("Delta: ", L))
         print(deltaList[[L]])
