@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimizer_nesterov_ag.R
 \name{OptimizerNesterovAG}
 \alias{OptimizerNesterovAG}
-\title{Optimizer Stochastic Gradient Descent with Momentum}
+\title{Optimizer Nesterov Accelerated Gradient}
 \description{
 This class is responsible for performing the
 optimization method "Nesterov accelerated gradient"
