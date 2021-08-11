@@ -1,2 +1,7 @@
 ^NeuralNetwork\.Rproj$
 ^\.Rproj\.user$
+^R/Shiny_App$
+^test\.R$
+^mnist$
+^R/mnist\.R$
+^tests$

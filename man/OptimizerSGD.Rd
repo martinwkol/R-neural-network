@@ -8,6 +8,12 @@ This class is responsible for performing the
 optimization method "Stochastic Gradient Descent"
 on a neural network for a given list of training data
 }
+\examples{
+optimizer <- OptimizerSGD$new(0.0005, 0)
+optimizer$setLearningRate(0.0001)
+optimizer$setRegularizationRate(0.00001)
+
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
