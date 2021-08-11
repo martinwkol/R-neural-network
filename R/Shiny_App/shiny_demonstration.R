@@ -179,12 +179,13 @@ server <- function(input, output, session) {
     }
     trainer <- Trainer$new(nn, optimizer, session$userData$train_data, session$userData$test_data)
 
-    epochs <- input$epochs
-    dataPerEpoch <- input$dataPerEpoch
+    epochs <- as.integer(input$epochs)
+    dataPerEpoch <- as.integer(input$dataPerEpoch)
     if(session$userData$lastx == 0) {
       session$userData$x <- 0
       session$userData$y <- trainer$test(1000)
     }
+    toTrain <- epochs*dataPerEpoch
     for(j in 1:epochs) {
       for(i in 1:(dataPerEpoch/500)) {
         trainer$train(1, 500)
@@ -192,10 +193,11 @@ server <- function(input, output, session) {
         session$userData$lastx <- session$userData$lastx + 500
         session$userData$x <- c(session$userData$x, session$userData$lastx)
         session$userData$y <- c(session$userData$y, trainer$test(1000))
+        print(paste(session$userData$lastx, " of ", toTrain, " datapoints trained!"))
       }
     }
     output$curvePlot <- renderPlot({
-      plot(x=session$userData$x, y=session$userData$y, type="l", xlim=c(0,max(60000, session$userData$lastx)), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
+      plot(x=session$userData$x, y=session$userData$y, type="l", xlim=c(0,max(20000, session$userData$lastx)), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
       abline(h = max(session$userData$y), col="red", lty="dashed")
     }, height=input$dimension[2] - 120)
     session$userData$nn <- trainer$getNeuralnet()
