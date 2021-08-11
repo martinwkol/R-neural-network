@@ -1,7 +1,7 @@
 #initialize method
 test_that("Testing if the activation function is used correctly", {
   f <- function(x) tanh(x)
-  nn <- NeuralNet$new(c(1,3,3,1), f, f, f)
+  nn <- NeuralNet$new(c(1,3,3,1), f, f)
   for(i in runif(10, 0, 100)) {
     expect_equal(f(i), nn$actfct(i))
   }
@@ -9,7 +9,7 @@ test_that("Testing if the activation function is used correctly", {
 
 test_that("Testing if the derivative activation function is used correctly", {
   f <- function(x) tanh(x)
-  nn <- NeuralNet$new(c(1,3,3,1), f, f, f)
+  nn <- NeuralNet$new(c(1,3,3,1), f, f)
   for(i in runif(10, 0, 100)) {
     expect_equal(f(i), nn$dActfct(i))
   }
