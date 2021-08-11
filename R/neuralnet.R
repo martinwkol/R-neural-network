@@ -5,7 +5,7 @@ predefinedactivation <- list(
   tanh = function(x) {tanh(x)}
 )
 predefinedactivationDriv <- list(
-  ReLU = function(x) {as.integer(x > 0)},
+  ReLU = function(x) {as.integer(x > 0)},asdasd
   sigmoid = function(x) {predefinedactivation$sigmoid(x) * (1 - predefinedactivation$sigmoid(x))},
   tanh = function(x) {1/cosh(x)^2}
 )
