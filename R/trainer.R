@@ -167,20 +167,54 @@ public = list(
   #' @description
   #' Sets the training data
   #'
-  #' @param training_data The list of the training data
+  #' @param training_data A list of lists that must each contain the
+  #' named components \code{input} and \code{expectedOutput};
+  #' The data to be separated into training data and test data
+  #'
+  #' @examples
+  #' training_data <- list(
+  #'   list(input = c(0.5, 0.5),
+  #'        expectedOutput = 2),
+  #'   list(input = c(0.1, 0.8),
+  #'        expectedOutput = 1)
+  #' )
+  #' trainer$setTrainingData(training_data)
   #'
   #' @export
   setTrainingData = function(training_data) {
+    stopifnot("data is not a list" = is.list(training_data))
+    for (d in training_data) {
+      stopifnot("Not every element of the datalist
+                has an input and an expected output
+                value" = all(c("input", "expectedOutput") %in% names(d)))
+    }
     private$training_data <- training_data
   },
 
   #' @description
   #' Sets the test data
   #'
-  #' @param test_data The list of the test data
+  #' @param test_data A list of lists that must each contain the
+  #' named components \code{input} and \code{expectedOutput};
+  #' The data to be separated into training data and test data
+  #'
+  #' @examples
+  #' test_data <- list(
+  #'   list(input = c(0.5, 0.5),
+  #'        expectedOutput = 2),
+  #'   list(input = c(0.1, 0.8),
+  #'        expectedOutput = 1)
+  #' )
+  #' trainer$setTestData(test_data)
   #'
   #' @export
   setTestData = function(test_data) {
+    stopifnot("data is not a list" = is.list(test_data))
+    for (d in test_data) {
+      stopifnot("Not every element of the datalist
+                has an input and an expected output
+                value" = all(c("input", "expectedOutput") %in% names(d)))
+    }
     private$test_data <- test_data
   },
 

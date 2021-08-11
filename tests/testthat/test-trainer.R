@@ -136,6 +136,48 @@ test_that("setOptimizer null", {
 })
 
 
+test_that("setTrainingData", {
+  nn <- NeuralNet$new(c(1, 3, 1), category = "classification")
+  optimizer <- OptimizerMomentum$new(0.0005, 0.00001, 0.9)
+  trainer <- Trainer$new(nn, optimizer)
+  data <- combineData(as.list(1:20), as.list(20:1))
+  trainer$setTrainingData(data)
+
+  expect_identical(data, trainer$getTrainingData())
+})
+
+test_that("setTrainingData Invalid datastructure", {
+  nn <- NeuralNet$new(c(1, 3, 1), category = "classification")
+  optimizer <- OptimizerMomentum$new(0.0005, 0.00001, 0.9)
+  trainer <- Trainer$new(nn, optimizer)
+  data <- combineData(as.list(1:20), as.list(20:1))
+
+  expect_error(trainer$setTrainingData(list(1, "L")))
+  expect_error(trainer$setTrainingData(list(1, list(input=1, expectedOutput=4))))
+  expect_error(trainer$setTrainingData(list(list(input = 5),list(expectedOutput = 5) )))
+})
+
+test_that("setTestData", {
+  nn <- NeuralNet$new(c(1, 3, 1), category = "classification")
+  optimizer <- OptimizerMomentum$new(0.0005, 0.00001, 0.9)
+  trainer <- Trainer$new(nn, optimizer)
+  data <- combineData(as.list(1:20), as.list(20:1))
+  trainer$setTestData(data)
+
+  expect_identical(data, trainer$getTestData())
+})
+
+test_that("setTestData Invalid datastructure", {
+  nn <- NeuralNet$new(c(1, 3, 1), category = "classification")
+  optimizer <- OptimizerMomentum$new(0.0005, 0.00001, 0.9)
+  trainer <- Trainer$new(nn, optimizer)
+  data <- combineData(as.list(1:20), as.list(20:1))
+
+  expect_error(trainer$setTestData(list(1, "L")))
+  expect_error(trainer$setTestData(list(1, list(input=1, expectedOutput=4))))
+  expect_error(trainer$setTestData(list(list(input = 5),list(expectedOutput = 5) )))
+})
+
 test_that("separateData", {
   nn <- NeuralNet$new(c(1, 3, 1), category = "classification")
   optimizer <- OptimizerMomentum$new(0.0005, 0.00001, 0.9)
@@ -390,8 +432,8 @@ test_that("train early stopping / no test data", {
   nn <- NeuralNet$new(c(1, 3, 2), category = "classification")
   optimizer <- OptimizerMomentum$new(0.0005, 0.00001, 0.9)
   trainer <- Trainer$new(nn, optimizer)
-  trainer$generateTrainingTest(as.list(1:200), as.list(rep(c(1, 2), 100)), test_percentage = 0.1)
-  trainer$setTestData(NULL)
+  td <- combineData(as.list(1:200), as.list(rep(c(1, 2), 100)))
+  trainer$setTrainingData(td)
 
   expect_error(trainer$train(2, use_early_stopping = T))
 })
