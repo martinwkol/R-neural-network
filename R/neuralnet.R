@@ -95,8 +95,6 @@ public = list(
       stopifnot("Specified activation function is not implemented." = !is.null(predefinedactivation[[activationfct]]))
       self$actfct <- predefinedactivation[[activationfct]]
       self$dActfct <- predefinedactivationDriv[[activationfct]]
-      #print(self$actfct)
-      #print(self$dActfct)
     } else if (class(activationfct) == "function") {
       stopifnot("Derivative of activation function is missing" = class(dActivationfct) == "function")
       self$actfct <- activationfct
