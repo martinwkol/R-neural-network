@@ -52,6 +52,9 @@ ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
         plotOutput("curvePlot"))
       ,
       tabPanel("Draw Yourself",
+        HTML("<b>The Network predicted:</b>"),
+        textOutput("drawPrediction"),
+        actionButton("resetDraw", "reset!"),
         plotOutput("drawPlot",
                   hover=hoverOpts(id="drawHower", delay=100, delayType="throttle", clip=TRUE, nullOutside = TRUE),
                   click="drawClick")
@@ -71,11 +74,47 @@ server <- function(input, output, session) {
   drawVals = reactiveValues(x=NULL, y=NULL)
   drawing = reactiveVal(FALSE)
 
+  observeEvent(input$resetDraw, {
+    drawVals$x <- NULL
+    drawVals$y <- NULL
+  })
+
   observeEvent(input$drawClick, {
     drawing(!drawing())
     if(!drawing()) {
       drawVals$x <- c(drawVals$x, NA)
       drawVals$y <- c(drawVals$y, NA)
+      #Calc
+      x <- drawVals$x
+      y <- drawVals$y
+      x <- x[!is.na(x)]
+      y <- y[!is.na(y)]
+      x <- round(x)
+      y <- round(y)
+
+      flat <- NULL
+      for(j in 28:1) {
+        for(i in 1:28) {
+          ind <- which(x == i)
+          flat <- c(flat, any(y[ind] == j))
+        }
+      }
+      flat <- as.integer(flat)
+      for(i in 1:length(flat)) {
+        if(i > 28 && flat[i] == 1) {
+          flat[i-28] <- max(flat[i-28], 0.5)
+        }
+        if(i <= 756 && flat[i] == 1) {
+          flat[i+28] <- max(flat[i+28], 0.5)
+        }
+        if(i > 1 && flat[i] == 1) {
+          flat[i-1] <- max(flat[i-1], 0.5)
+        }
+        if(i < 784 && flat[i] == 1) {
+          flat[i+1] <- max(flat[i+1], 0.5)
+        }
+      }
+      output$drawPrediction <- renderText({session$userData$nn$calculate(flat)[[3]] - 1})
     }
   })
 
@@ -163,10 +202,10 @@ server <- function(input, output, session) {
 
 
 mnist_folder <- "./R/Shiny_App/mnist/"
-#mnist <- MNIST$new(training_labels_fn = str_c(mnist_folder, "train-labels.idx1-ubyte"),
-#                   training_images_fn = str_c(mnist_folder, "train-images.idx3-ubyte"),
-#                   test_labels_fn = str_c(mnist_folder, "t10k-labels.idx1-ubyte"),
-#                   test_images_fn = str_c(mnist_folder, "t10k-images.idx3-ubyte"))
+mnist <- MNIST$new(training_labels_fn = str_c(mnist_folder, "train-labels.idx1-ubyte"),
+                   training_images_fn = str_c(mnist_folder, "train-images.idx3-ubyte"),
+                   test_labels_fn = str_c(mnist_folder, "t10k-labels.idx1-ubyte"),
+                   test_images_fn = str_c(mnist_folder, "t10k-images.idx3-ubyte"))
 
 
 app <- shinyApp(ui, server)
