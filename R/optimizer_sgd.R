@@ -93,16 +93,24 @@ public = list(
       deltaList <- list()
       weightsInfluenceList <- list()
 
-      lastXInfluence <-
-        getLastXInfluence(expectedOutput,
-                          nodeValue[[layer2nvIndex(L + 1)]],
-                          neuralnet$weights[[L + 1]])
+      if (L > 0) {
+        lastXInfluence <-
+          getLastXInfluence(expectedOutput,
+                            nodeValue[[layer2nvIndex(L + 1)]],
+                            neuralnet$weights[[L + 1]])
 
-      deltaList[[L]] <-
-        getLastDelta(lastXInfluence,
-                             rawNodeValue[[layer2nvIndex(L)]],
-                             neuralnet$dActfct)
-      stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
+        deltaList[[L]] <-
+          getLastDelta(lastXInfluence,
+                       rawNodeValue[[layer2nvIndex(L)]],
+                       neuralnet$dActfct)
+
+        stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
+        if(!all(!is.nan(deltaList[[L]]))) {
+          print(str_c("Delta: ", L))
+          print(deltaList[[L]])
+          stop()
+        }
+      }
 
       weightsInfluenceList[[L + 1]] <-
         getLastWeightsInfluence( expectedOutput,
@@ -115,13 +123,8 @@ public = list(
         print(weightsInfluenceList[[L + 1]])
         stop()
       }
-      if(!all(!is.nan(deltaList[[L]]))) {
-        print(str_c("Delta: ", L))
-        print(deltaList[[L]])
-        stop()
-      }
 
-      for(l in rev(seq(L))) {
+      for(l in rev(seq_len(L))) {
         weightsInfluenceList[[l]] <-
           getPrevWeightsInfluence(deltaList[[l]],
                                           nodeValue[[layer2nvIndex(l - 1)]])
@@ -143,10 +146,13 @@ public = list(
         }
       }
 
-      biasUpdates <-
-        mapply(calculateBiasUpdate,
-               deltaList, learning_rate,
-               SIMPLIFY = F)
+      biasUpdates <- list()
+      if (L > 0) {
+        biasUpdates <-
+          mapply(calculateBiasUpdate,
+                 deltaList, learning_rate,
+                 SIMPLIFY = F)
+      }
       weightUpdates <-
         mapply(calculateWeightUpdate, neuralnet$weights,
                weightsInfluenceList, learning_rate, regularization_rate,

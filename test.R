@@ -41,13 +41,12 @@ trainer$train(1000)
 trainer$test(500)
 
 bestnn <- trainer$getBestNeuralnet()
-trainer$
 
 
 # MINST with MomentumOpt
-nn <- NeuralNet$new(c(784,  200, 10), activationfct="ReLU", category="classification")
-optimizer <- OptimizerMomentum$new(0.3, 0, 0.9)
-trainer <- Trainer$new(nn, optimizer, NULL, NULL)
+nn2 <- NeuralNet$new(c(784,  200, 10), activationfct="ReLU", category="classification")
+optimizer <- OptimizerMomentum$new(0.0005, 0, 0.9)
+trainer <- Trainer$new(nn2, optimizer, NULL, NULL)
 trainer$separateData(c(mnist$training_data, mnist$test_data))
 
 trainer$train(1, use_early_stopping = T,
