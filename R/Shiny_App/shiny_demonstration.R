@@ -2,14 +2,7 @@ library(shiny)
 library(stringr)
 ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
   tabPanel("Configure Neural Net",
-    fluidRow(
-      column(6,
-        radioButtons("actfunction", "Activation Function", c("ReLU"="ReLU", "Tangens Hyperbolicus" = "tanh", "Sigmoid" = "sigmoid")),
-      ),
-      column(6,
-        radioButtons("outputactfunction", "Activation Function for Output", c("None"= "none","ReLU"="ReLU", "Tangens Hyperbolicus" = "tanh", "Sigmoid" = "sigmoid")),
-      ),
-    ),
+    radioButtons("actfunction", "Activation Function", c("ReLU"="ReLU", "Tangens Hyperbolicus" = "tanh", "Sigmoid" = "sigmoid")),
     tags$b("Hidden Layers"),
     p("A comma seperated list with each value denoting the number of neurons for that layer (This won't be tested!!)"),
     textInput("layers", NULL, value="100, 200"),
@@ -36,12 +29,33 @@ ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
   mainPanel(
     tabsetPanel(
       tabPanel("Net Visualization",
+        #
+        #For plot height
+        tags$head(tags$script('
+                                var dimension = [0, 0];
+                                $(document).on("shiny:connected", function(e) {
+                                    dimension[0] = window.innerWidth;
+                                    dimension[1] = window.innerHeight;
+                                    Shiny.onInputChange("dimension", dimension);
+                                });
+                                $(window).resize(function(e) {
+                                    dimension[0] = window.innerWidth;
+                                    dimension[1] = window.innerHeight;
+                                    Shiny.onInputChange("dimension", dimension);
+                                });
+                            ')),
+        #
+        #
         plotOutput("visplot")
       ),
       tabPanel("Learning Curve",
         plotOutput("curvePlot"))
       ,
-      tabPanel("Draw Yourself")
+      tabPanel("Draw Yourself",
+        plotOutput("drawPlot",
+                  hover=hoverOpts(id="drawHower", delay=100, delayType="throttle", clip=TRUE, nullOutside = TRUE),
+                  click="drawClick")
+      )
     )
   )
   )
@@ -53,28 +67,47 @@ server <- function(input, output, session) {
   session$userData$train_data <- mnist$training_data
   session$userData$test_data <- mnist$test_data
 
+  #Draw Plot
+  drawVals = reactiveValues(x=NULL, y=NULL)
+  drawing = reactiveVal(FALSE)
+
+  observeEvent(input$drawClick, {
+    drawing(!drawing())
+    if(!drawing()) {
+      drawVals$x <- c(drawVals$x, NA)
+      drawVals$y <- c(drawVals$y, NA)
+    }
+  })
+
+  observeEvent(input$drawHower, {
+    if(drawing()) {
+      drawVals$x <- c(drawVals$x, input$drawHower$x)
+      drawVals$y <- c(drawVals$y, input$drawHower$y)
+    }
+  })
+
+  output$drawPlot = renderPlot({
+    plot(x=drawVals$x, y=drawVals$y, xlim=c(0,28), ylim=c(0,28), type="l", lwd=14, xlab="", ylab="", xaxt="n", yaxt="n", mar=c(2,2,2,2)+0.1)
+  }, width=560, height=560)
+
   #New Network Creation
   observeEvent(input$newNet, {
     actfct <- input$actfunction
-    outputfct <- NULL
-    if(input$outputactfunction != "none") {
-      outputfct <- input$outputactfunction
-    }
     layers <- input$layers
     layers <- str_replace_all(layers, " ", "")
     layers <- str_split(layers, ",")[[1]]
     layers <- as.integer(layers)
     layers <- c(784, layers, 10)
-    session$userData$nn <- NeuralNet$new(layers, actfct, outputfct)
+    session$userData$nn <- NeuralNet$new(layers, actfct)
 
     output$visplot <- renderPlot({
       session$userData$nn$plot(labels=FALSE)
-    }, height=700)
+    }, height=input$dimension[2] - 120)
 
 
     output$curvePlot <- renderPlot({
       plot(x=NULL, y=NULL, xlim=c(0,60000), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
-    }, height=700)
+    }, height=input$dimension[2] - 120)
     session$userData$x <- NULL
     session$userData$y <- NULL
     session$userData$lastx <- 0
@@ -116,13 +149,13 @@ server <- function(input, output, session) {
     output$curvePlot <- renderPlot({
       plot(x=session$userData$x, y=session$userData$y, type="l", xlim=c(0,max(60000, session$userData$lastx)), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
       abline(h = max(session$userData$y), col="red", lty="dashed")
-    }, height=700)
+    }, height=input$dimension[2] - 120)
     session$userData$nn <- trainer$getNeuralnet()
 
 
     output$visplot <- renderPlot({
       session$userData$nn$plot(labels=FALSE)
-    }, height=700)
+    }, height=input$dimension[2] - 120)
 
     shinyjs::enable("trainNet")
   })
