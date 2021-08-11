@@ -281,7 +281,7 @@ public = list(
   #'
   plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) },
                   image.save = FALSE, image.filename = NULL, image.type = NULL,
-                  lables = TRUE) {
+                  labels = TRUE) {
     stopifnot("col.fct must be a function" = identical(class(col.fct), "function"))
     if(image.save){
       stopifnot("image.filename must not be NULL" = !is.null(image.filename))

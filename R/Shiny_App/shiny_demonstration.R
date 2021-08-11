@@ -68,14 +68,18 @@ server <- function(input, output, session) {
     session$userData$nn <- NeuralNet$new(layers, actfct, outputfct)
 
     output$visplot <- renderPlot({
-      session$userData$nn$plot()
+      session$userData$nn$plot(labels=FALSE)
     }, height=700)
+
+
     output$curvePlot <- renderPlot({
       plot(x=NULL, y=NULL, xlim=c(0,60000), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
     }, height=700)
     session$userData$x <- NULL
     session$userData$y <- NULL
     session$userData$lastx <- 0
+
+
     shinyjs::enable("trainNet")
   })
 
@@ -117,7 +121,7 @@ server <- function(input, output, session) {
 
 
     output$visplot <- renderPlot({
-      session$userData$nn$plot()
+      session$userData$nn$plot(labels=FALSE)
     }, height=700)
 
     shinyjs::enable("trainNet")
