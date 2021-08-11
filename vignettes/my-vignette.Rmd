@@ -18,58 +18,30 @@ knitr::opts_chunk$set(
 library(NeuralNetwork)
 ```
 ## Functionality
-This package provides functionality to
+This package provides functionality to built user-defined feedforward Neural Networks for classification and 
+<br>
+You can
 
-* built user-defined feedforward Neural Networks for classification and regression
 * use different activation functions
 * choose between different algorithms
 * split data into test- and trainsets
+* evaluate the results
 * visualize the Neural Network
+
 <br>
+
 
 
 # Usage
 
 ## 1. Create a Neural Network 
 
-```
-R6 Class Representing a Neural Network
+First you have to create a Neural Network.
 
-NeuralNet <- R6::R6Class("NeuralNet",
-public = list(inputsize = NULL, weights = list(), bias = list(), nrhiddenlayers = NULL, actfct = NULL, dActfct = NULL, outputfct = NULL, category = NULL)) 
-
-  @param inputsize size of the input for the Neural Network (1st layer of nodes)
-  
-  @param weights ist of matrices representing the weights of the connections
-         between nodes.
-
-  @param bias list of vectors representing the biases for nodes.
-  
-  @param nrhiddenlayers number of hidden layers of the Neural Network.
-  
-  @param actfct string matching predefined activation function or
-         other function, see \code{Activation Functions}.
-         
-  @param dactfct NULL, when using predefined Activation functions, or
-         the derivative of a custom Activation function, it is not checked for
-         correcteness. (dactfct = Deactivation Function)
-         
-  @param outputfct string matching predefined activation function or
-         other a function, see \code{Activation Functions}, used as activation
-         function for the last layer of nodes
-         
-  @param category string matching valid category for Neural Network, either
-         classification or regression.
-
-```
-
-<br>
-
-### examples
 
 This will generate a Neural Network with two input nodes, two output nodes and two hidden layers with four nodes each:
 
-`nn.1 <- NeuralNet$new(c(2,4,4,2))`
+`nn <- NeuralNet$new(c(2,4,4,2))`
 
 <br>
 
@@ -77,49 +49,19 @@ This will generate a Neural Network using the predefined sigmoid function as
 activation function for all layers, including the output-layer:
 
 
-`nn.2 <- NeuralNet$new(c(2,4,4,2), activationfct = "sigmoid", outputfct = "sigmoid")`
+`nn <- NeuralNet$new(c(2,4,4,2), activationfct = "sigmoid", outputfct = "sigmoid")`
 
 ## 2. Configure Optimizer
 
 You can choose between three optimizer algorithms:
 
 * Stochastic Gradient Descent 
-```
-OptimizerSGD <- R6::R6Class("OptimizerSGD",
-private = list(learning_rate = 0, regularization_rate = 0)
-
-
-```
 
 * Stochastic Gradient Descent with Momentum
-
-```
-OptimizerMomentum <- R6::R6Class("OptimizerMomentum",
-private = list(
-  learning_rate = 0,
-  regularization_rate = 0,
-  momentum_term = 0,
-  weightMomentum = NULL,
-  biasMomentum = NULL
-)
-```
 
 * Nesterov accelerated gradient
 
 
-```
-
-OptimizerNesterovAG <- R6::R6Class("OptimizerNesterovAG",private = list(
-   learning_rate = 0,
-   regularization_rate = 0,
-   momentum_term = 0,
-   weightMomentum = NULL,
-   biasMomentum = NULL
- )
- 
-```
-
-### examples
 
 This will generate a Stochastic Gradient Descent with Momentum Optimizer with a learning_rate of 0.0005, regularization_rate of 0 and a momentum_term of 0:
  
@@ -136,4 +78,74 @@ The previous set values can be changed:
 
 ## 3. Prepare Data
 
+Load and save dataset(we use <https://en.wikipedia.org/wiki/MNIST_database>):
 
+```
+devtools::load_all("./R/")
+mnist_folder <- "./mnist/"
+```
+Bring data in an usable format, declares test- and trainsets:
+
+```
+mnist <- MNIST$new(training_labels_fn = str_c(mnist_folder, "train-labels.idx1-ubyte"),
+                   training_images_fn = str_c(mnist_folder, "train-images.idx3-ubyte"),
+                   test_labels_fn = str_c(mnist_folder, "t10k-labels.idx1-ubyte"),
+                   test_images_fn = str_c(mnist_folder, "t10k-images.idx3-ubyte"))
+
+```
+
+## 4. Training
+
+The trainer class manages the training and the testing process of a given network for a given optimizer.
+
+
+
+This generates a trainer:
+```
+trainer <- Trainer$new(nn, optimizer, NULL, NULL)
+
+```
+Split into test- and trainset:
+```
+trainer$separateData(c(mnist$training_data, mnist$test_data))
+
+```
+
+Examples of training with different parameters:
+```
+trainer$train(1, use_early_stopping = T,
+              es_test_frequency = 1000, es_test_size = 100,
+              es_minimal_improvement = -0.05)
+trainer$train(1, use_early_stopping = T,
+              es_test_frequency = 1000, es_test_size = 100,
+              es_minimal_improvement = -0.02)
+trainer$train(1, 500)
+trainer$train(1, 1000)
+trainer$train(1, 100)
+```
+
+Evaluate the neural network on the first n (here 500) elements of the test dataset: 
+```
+trainer$test(500)
+
+```
+Swap the currently used neural network with the copy of the neural network, that scored the best:
+
+```
+trainer$swapWithBestNeuralnet()
+
+```
+Change the previous set Neural Network:
+```
+trainer$setNeuralnet(nn)
+
+```
+
+## 5. Visualization
+
+This will give you a visualization of the Neural Network:
+
+```
+nn$plot()
+
+```
