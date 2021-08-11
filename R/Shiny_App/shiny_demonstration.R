@@ -1,6 +1,6 @@
 library(shiny)
 library(stringr)
-source("./R/Shiny_App/mnist.R", echo=FALSE)
+source("./mnist.R", echo=FALSE)
 ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
   tabPanel("Configure Neural Net",
     radioButtons("actfunction", "Activation Function", c("ReLU"="ReLU", "Tangens Hyperbolicus" = "tanh", "Sigmoid" = "sigmoid")),
@@ -210,7 +210,7 @@ server <- function(input, output, session) {
 }
 
 
-mnist_folder <- "./R/Shiny_App/mnist/"
+mnist_folder <- "./mnist/"
 mnist <- MNIST$new(training_labels_fn = str_c(mnist_folder, "train-labels.idx1-ubyte"),
                    training_images_fn = str_c(mnist_folder, "train-images.idx3-ubyte"),
                    test_labels_fn = str_c(mnist_folder, "t10k-labels.idx1-ubyte"),
