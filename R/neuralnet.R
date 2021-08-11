@@ -282,7 +282,8 @@ public = list(
   #'   image.type = "jpg")
   #'
   plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) },
-                  image.save = FALSE, image.filename = NULL, image.type = NULL) {
+                  image.save = FALSE, image.filename = NULL, image.type = NULL,
+                  lables = TRUE) {
     stopifnot("col.fct must be a function" = identical(class(col.fct), "function"))
     if(image.save){
       stopifnot("image.filename must not be NULL" = !is.null(image.filename))
@@ -419,7 +420,8 @@ public = list(
     graphics::points(x, y, pch = 21, cex = 3, bg = "white")
 
     #adding labels
-    graphics::text(x, y, labels = l, pos = 3, offset = 1)
+    if(lables)
+      graphics::text(x, y, labels = l, pos = 3, offset = 1)
 
     # saving image
     if(image.save){
