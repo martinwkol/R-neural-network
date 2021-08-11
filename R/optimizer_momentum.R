@@ -93,7 +93,7 @@ public = list(
   #' @param training_data The training data used for training the
   #' network
   #'
-  #' @export
+  #' @noRd
   optim = function(neuralnet, training_data) {
     layer2nvIndex <- function(layer) layer + 1
 
@@ -200,7 +200,7 @@ public = list(
   #' @description
   #' Deletes info from earlier optimization processes
   #'
-  #' @export
+  #' @noRd
   reset = function() {
     private$weightMomentum <- NULL
     private$biasMomentum <- NULL

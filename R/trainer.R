@@ -332,7 +332,7 @@ public = list(
 
       trained_data_since_test <- 0
       for (epoch in seq(epochs)) {
-        shuffled_td <- sample(private$training_data)[seq(training_per_epoch)]
+        shuffled_td <- sample(private$training_data, size = training_per_epoch)
 
         start_index <- 1
         while(start_index <= length(shuffled_td)) {
@@ -359,7 +359,7 @@ public = list(
     } else {
 
       for (epoch in seq(epochs)) {
-        shuffled_td <- sample(private$training_data)[seq(training_per_epoch)]
+        shuffled_td <- sample(private$training_data, size = training_per_epoch)
         private$optimizer$optim(private$neuralnet, shuffled_td)
       }
 

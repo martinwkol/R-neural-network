@@ -67,8 +67,7 @@ trainer$test(500)
 # MINST with MomentumNesterovAG
 nn <- NeuralNet$new(c(784,  200, 10), activationfct="ReLU", category="classification")
 optimizer <- OptimizerNesterovAG$new(0.0005, 0, 0.9)
-trainer <- Trainer$new(nn, optimizer, NULL, NULL)
-trainer$separateData(c(mnist$training_data, mnist$test_data))
+trainer <- Trainer$new(nn, optimizer, mnist$training_data, mnist$test_data)
 
 trainer$train(1, 10000, use_early_stopping = T,
               es_test_frequency = 1000, es_test_size = 100,
