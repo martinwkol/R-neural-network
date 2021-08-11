@@ -236,22 +236,22 @@ public = list(
   #'
   #' # saving a plot
   #'
-  #' # file will be saved as 'file.png'
-  #' nn$plot(image.save = TRUE,
-  #'   image.filename = "file",
-  #'   image.type = "png")
+  #' ## file will be saved as 'file.png'
+  #' # nn$plot(image.save = TRUE,
+  #' #   image.filename = "file",
+  #' #   image.type = "png")
   #'
-  #' # here '.jpeg' is not a valid extension for type 'png', '.png' will
-  #' # be appendedto the filename, file will be saved as 'file.jpeg.png'
-  #' nn$plot(image.save = TRUE,
-  #'   image.filename = "file.jpeg",
-  #'   image.type = "png")
+  #' ## here '.jpeg' is not a valid extension for type 'png', '.png' will
+  #' ## be appendedto the filename, file will be saved as 'file.jpeg.png'
+  #' #nn$plot(image.save = TRUE,
+  #' #   image.filename = "file.jpeg",
+  #' #   image.type = "png")
   #'
-  #' # file will be saved in directory 'test/', if 'test/' does not exist
-  #' # grDevices will return an error
-  #' nn$plot(image.save = TRUE,
-  #'   image.filename = "test/file.jpg",
-  #'   image.type = "jpg")
+  #' ## file will be saved in directory 'test/', if 'test/' does not exist
+  #' ## grDevices will return an error
+  #' # nn$plot(image.save = TRUE,
+  #' #   image.filename = "test/file.jpg",
+  #' #   image.type = "jpg")
   #'
   plot = function(max.lwd = 5, standard.lwd = FALSE, col.fct = function(x) { grDevices::hcl(x * 60 + 60) },
                   image.save = FALSE, image.filename = NULL, image.type = NULL,

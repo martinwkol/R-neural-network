@@ -22,8 +22,7 @@ nn.1 <- NeuralNet$new(c(2,4,4,2))
 # activation function for all layers (including the outputlayer)
 nn.2 <- NeuralNet$new(
   c(2,4,4,2),
-  activationfct = "sigmoid",
-  outputfct = "sigmoid")
+  activationfct = "sigmoid")
 
 ## ------------------------------------------------
 ## Method `NeuralNet$plot`
@@ -50,22 +49,22 @@ nn$plot(col.fct = function(x) {
 
 # saving a plot
 
-# file will be saved as 'file.png'
-nn$plot(image.save = TRUE,
-  image.filename = "file",
-  image.type = "png")
+## file will be saved as 'file.png'
+# nn$plot(image.save = TRUE,
+#   image.filename = "file",
+#   image.type = "png")
 
-# here '.jpeg' is not a valid extension for type 'png', '.png' will
-# be appendedto the filename, file will be saved as 'file.jpeg.png'
-nn$plot(image.save = TRUE,
-  image.filename = "file.jpeg",
-  image.type = "png")
+## here '.jpeg' is not a valid extension for type 'png', '.png' will
+## be appendedto the filename, file will be saved as 'file.jpeg.png'
+#nn$plot(image.save = TRUE,
+#   image.filename = "file.jpeg",
+#   image.type = "png")
 
-# file will be saved in directory 'test/', if 'test/' does not exist
-# grDevices will return an error
-nn$plot(image.save = TRUE,
-  image.filename = "test/file.jpg",
-  image.type = "jpg")
+## file will be saved in directory 'test/', if 'test/' does not exist
+## grDevices will return an error
+# nn$plot(image.save = TRUE,
+#   image.filename = "test/file.jpg",
+#   image.type = "jpg")
 
 }
 \section{Public fields}{
@@ -165,8 +164,7 @@ nn.1 <- NeuralNet$new(c(2,4,4,2))
 # activation function for all layers (including the outputlayer)
 nn.2 <- NeuralNet$new(
   c(2,4,4,2),
-  activationfct = "sigmoid",
-  outputfct = "sigmoid")
+  activationfct = "sigmoid")
 }
 \if{html}{\out{</div>}}
 
@@ -293,22 +291,22 @@ nn$plot(col.fct = function(x) {
 
 # saving a plot
 
-# file will be saved as 'file.png'
-nn$plot(image.save = TRUE,
-  image.filename = "file",
-  image.type = "png")
+## file will be saved as 'file.png'
+# nn$plot(image.save = TRUE,
+#   image.filename = "file",
+#   image.type = "png")
 
-# here '.jpeg' is not a valid extension for type 'png', '.png' will
-# be appendedto the filename, file will be saved as 'file.jpeg.png'
-nn$plot(image.save = TRUE,
-  image.filename = "file.jpeg",
-  image.type = "png")
+## here '.jpeg' is not a valid extension for type 'png', '.png' will
+## be appendedto the filename, file will be saved as 'file.jpeg.png'
+#nn$plot(image.save = TRUE,
+#   image.filename = "file.jpeg",
+#   image.type = "png")
 
-# file will be saved in directory 'test/', if 'test/' does not exist
-# grDevices will return an error
-nn$plot(image.save = TRUE,
-  image.filename = "test/file.jpg",
-  image.type = "jpg")
+## file will be saved in directory 'test/', if 'test/' does not exist
+## grDevices will return an error
+# nn$plot(image.save = TRUE,
+#   image.filename = "test/file.jpg",
+#   image.type = "jpg")
 
 }
 \if{html}{\out{</div>}}
