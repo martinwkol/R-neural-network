@@ -1,5 +1,6 @@
 library(shiny)
 library(stringr)
+source("./mnist.R", echo=FALSE)
 ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
   tabPanel("Configure Neural Net",
     radioButtons("actfunction", "Activation Function", c("ReLU"="ReLU", "Tangens Hyperbolicus" = "tanh", "Sigmoid" = "sigmoid")),
