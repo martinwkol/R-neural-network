@@ -1,6 +1,6 @@
 library(shiny)
 library(stringr)
-source("./mnist.R", echo=FALSE)
+source("./R/Shiny_App/mnist.R", echo=FALSE)
 ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
   tabPanel("Configure Neural Net",
     radioButtons("actfunction", "Activation Function", c("ReLU"="ReLU", "Tangens Hyperbolicus" = "tanh", "Sigmoid" = "sigmoid")),
@@ -102,17 +102,23 @@ server <- function(input, output, session) {
       }
       flat <- as.integer(flat)
       for(i in 1:length(flat)) {
-        if(i > 28 && flat[i] == 1) {
-          flat[i-28] <- max(flat[i-28], 0.5)
+        if(i > 29 && flat[i] == 1) {
+          flat[i-27] <- max(flat[i-27], 0.3)
+          flat[i-28] <- max(flat[i-28], 0.6)
+          flat[i-29] <- max(flat[i-29], 0.3)
         }
-        if(i <= 756 && flat[i] == 1) {
-          flat[i+28] <- max(flat[i+28], 0.5)
+        if(i <= 755 && flat[i] == 1) {
+          flat[i+27] <- max(flat[i+27], 0.3)
+          flat[i+28] <- max(flat[i+28], 0.6)
+          flat[i+29] <- max(flat[i+29], 0.3)
         }
-        if(i > 1 && flat[i] == 1) {
-          flat[i-1] <- max(flat[i-1], 0.5)
+        if(i > 2 && flat[i] == 1) {
+          flat[i-1] <- max(flat[i-1], 0.6)
+          flat[i-2] <- max(flat[i-2], 0.3)
         }
-        if(i < 784 && flat[i] == 1) {
-          flat[i+1] <- max(flat[i+1], 0.5)
+        if(i < 783 && flat[i] == 1) {
+          flat[i+1] <- max(flat[i+1], 0.6)
+          flat[i+2] <- max(flat[i+2], 0.3)
         }
       }
       output$drawPrediction <- renderText({session$userData$nn$calculate(flat)[[3]] - 1})
@@ -179,12 +185,14 @@ server <- function(input, output, session) {
       session$userData$x <- 0
       session$userData$y <- trainer$test(1000)
     }
-    for(i in 1:(dataPerEpoch/500)) {
-      trainer$train(1, 500)
-      trainer$swapWithBestNeuralnet()
-      session$userData$lastx <- session$userData$lastx + 500
-      session$userData$x <- c(session$userData$x, session$userData$lastx)
-      session$userData$y <- c(session$userData$y, trainer$test(1000))
+    for(j in 1:epochs) {
+      for(i in 1:(dataPerEpoch/500)) {
+        trainer$train(1, 500)
+        #trainer$swapWithBestNeuralnet()
+        session$userData$lastx <- session$userData$lastx + 500
+        session$userData$x <- c(session$userData$x, session$userData$lastx)
+        session$userData$y <- c(session$userData$y, trainer$test(1000))
+      }
     }
     output$curvePlot <- renderPlot({
       plot(x=session$userData$x, y=session$userData$y, type="l", xlim=c(0,max(60000, session$userData$lastx)), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
