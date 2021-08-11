@@ -101,47 +101,96 @@ test_data <- list(
     list(input = 1:784 * 2, expectedOutput = 1) # ,
     # ...
 )
-trainer <- Trainer$new(nn_cls, optimizer,
+trainer <- Trainer$new(nn, optimizer,
                        training_data,
                        test_data))
 ```
 
-
-## 3. Prepare Data
-
-Load and save dataset(we use <https://en.wikipedia.org/wiki/MNIST_database>):
+If your neural network uses regression, you must specify an accuracy tester like so:
 
 ```
-devtools::load_all("./R/")
-mnist_folder <- "./mnist/"
-```
-Bring data in an usable format, declares test- and trainsets:
-
-```
-mnist <- MNIST$new(training_labels_fn = str_c(mnist_folder, "train-labels.idx1-ubyte"),
-                   training_images_fn = str_c(mnist_folder, "train-images.idx3-ubyte"),
-                   test_labels_fn = str_c(mnist_folder, "t10k-labels.idx1-ubyte"),
-                   test_images_fn = str_c(mnist_folder, "t10k-images.idx3-ubyte"))
-
+accuracy_tester <- accuracy_tester_regression_rel(0.1)
+trainer <- Trainer$new(nn, optimizer, accuracy_tester = accuracy_tester)
 ```
 
-## 4. Training
-
-The trainer class manages the training and the testing process of a given network for a given optimizer.
-
-
-
-This generates a trainer:
-```
-trainer <- Trainer$new(nn, optimizer, NULL, NULL)
+That means that the trainer will consider outputs by the network that don't deviate 
+from the expected result by more than 10% (relative) as accurate.
+<br>
+You can also use an absolute accuracy tester:
 
 ```
-Split into test- and trainset:
-```
-trainer$separateData(c(mnist$training_data, mnist$test_data))
-
+accuracy_tester <- accuracy_tester_regression_abs(5)
+trainer <- Trainer$new(nn, optimizer, accuracy_tester = accuracy_tester)
 ```
 
+In this case the trainer will consider outputs by the network that don't deviate 
+from the expected result by more than 5 (absolute) as accurate.
+
+## 4. Prepare Data
+
+Often times the training / test data is divided into a list of inputs and target values.
+You can combine these lists to one list, that the trainer will be able to read using
+the combineData method:
+
+```
+training_inputs <-
+   list(c(0.5, 0.5), c(0.1, 0.8))
+training_targets <-
+   list(2, 1)
+training_data <- combineData(training_inputs, training_targets)
+test_inputs <-
+   list(c(0.5, 0.5), c(0.1, 0.8))
+test_targets <-
+   list(2, 1)
+test_data <- combineData(test_inputs, test_targets)
+trainer$setTrainingData(training_data)
+trainer$setTestData(test_data)
+```
+
+You can use the seperateData method to let the trainer devide your data into 
+training and test data:
+
+```
+inputs <-
+   list(c(0.5, 0.5), c(0.1, 0.8))
+targets <-
+   list(2, 1)
+data <- combineData(inputs, targets)
+trainer$seperateData(data, test_percentage = 0.15)
+```
+
+You can combine the methods combineData and seperateData with the method gererateTrainingTest:
+```
+inputs <-
+   list(c(0.5, 0.5), c(0.1, 0.8))
+targets <-
+   list(2, 1)
+data <- combineData(inputs, targets)
+trainer$generateTrainingTest(inputs, targets, test_percentage = 0.15)
+```
+
+## 5. Training
+
+You can train your data with the train method:
+```
+trainer$train(epochs = 10, training_per_epoch = 10000)
+```
+The parameter "epochs" is the number of epochs, the network will be trained
+The parameter " training_per_epoch" is the amount of training data that will be used for an epoch (if you don't want to use all of your training data in an epoch).
+<br>
+The train method supports early stopping:
+```
+trainer$train(10, training_per_epoch = 10000, use_early_stopping = T,
+              es_test_frequency = 1000, es_test_size = 100,
+              es_minimal_improvement = -0.05)
+```
+If use_early_stopping is set to true, the method will test the network for every
+es_test_frequency (here: 1000) training data points with es_test_size (here: 1000)
+many test data points. If the accuracy of the network is smaller than the best
+accuracy (overall of this network with this trainer) of the network + 
+es_minimal_improvement (here: -0.05), the method aborts the training.
+The method will return true, if the training was finished without early stopping
+and false if the training was aborted
 Examples of training with different parameters:
 ```
 trainer$train(1, use_early_stopping = T,
@@ -155,20 +204,25 @@ trainer$train(1, 1000)
 trainer$train(1, 100)
 ```
 
-Evaluate the neural network on the first n (here 500) elements of the test dataset: 
+You can test the network with the test function:
 ```
-trainer$test(500)
+trainer$test(N = 500)
 
 ```
-Swap the currently used neural network with the copy of the neural network, that scored the best:
+The parameter N specifies with how many test data points the neural network is 
+supposed to be tested. If you don't specify N, the network will be tested with
+all test data available. The method returns the ratio of correctly calculated outputs
+divided by the number of tests performed.
+You can swap the currently used neural network of the with the copy of the neural network, that scored the best using the following code:
 
 ```
 trainer$swapWithBestNeuralnet()
 
 ```
-Change the previous set Neural Network:
+
+You can also get the best neural network with the following code:
 ```
-trainer$setNeuralnet(nn)
+trainer$getBestNeuralnet()
 
 ```
 
