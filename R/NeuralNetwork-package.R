@@ -1,5 +1,9 @@
 #' NeuralNetwork: Creating, Training and Using Neural Networks
-#' @description Used to Create and Train Neural Networks
+#' @description
+#' A package for creating and trainging neural networks.
+#' The package supports the training method "Stochastic
+#' Gradient Descent" and two optimized versions of this
+#' method using momentum.
 # #' @references \url{https://r-pkgs.org/}
 #' @keywords internal
 "_PACKAGE"

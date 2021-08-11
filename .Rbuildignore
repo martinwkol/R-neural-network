@@ -5,3 +5,5 @@
 ^mnist$
 ^R/mnist\.R$
 ^tests$
+^doc$
+^Meta$

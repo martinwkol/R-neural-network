@@ -117,8 +117,10 @@ public = list(
     }
 
     self$inputsize <- layers[1]
+
     #nr of hidden layers, first is input, last is output
     self$nrhiddenlayers <- length(layers) - 2
+
     #save size of inputlayer, and remove from layersvector
     lastsize <- layers[1]
     layers <- layers[-1]
@@ -127,6 +129,7 @@ public = list(
       matrix_entries <- rnorm(lsize * lastsize, 0, lsize**-0.5)
       self$weights <- c(self$weights, list(matrix(matrix_entries, lsize, lastsize)))
       lastsize <- lsize
+
       #create bias TO DO: initialize bias
       self$bias <- c(self$bias, list(rep(0, lsize)))
     }
@@ -159,28 +162,14 @@ public = list(
     for(i in seq_len(self$nrhiddenlayers)) {
       #weights
       output <- self$weights[[i]]%*%output
+
       #bias
       output <- output + self$bias[[i]]
       rawNodeValues[[length(rawNodeValues) + 1]] <- output
-      #apply the activation function
-      'if(!all(!is.nan(output))) {
-        print(any(is.nan(self$weights[[i]])))
-        print(any(is.nan(self$bias[[i]])))
-        print(self$weights[[i]])
-        print(self$bias[[i]])
-        print("Before Actf")
-        stop()
-      }'
 
+      #apply the activation function
       output <- sapply(output, self$actfct)
       nodeValues[[length(nodeValues) + 1]] <- output
-
-      'if(!all(!is.nan(output))) {
-        print("After Actf")
-        stop()
-      }'
-      #stopifnot(all(!is.nan(output)))
-      #print(output)
     }
 
     output <- self$weights[[self$nrhiddenlayers + 1]] %*% output

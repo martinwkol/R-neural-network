@@ -154,27 +154,23 @@ OptimizerNesterovAG <- R6::R6Class("OptimizerNesterovAG",
                getLastDelta(lastXInfluence,
                             rawNodeValue[[layer2nvIndex(L)]],
                             neuralnet$dActfct)
-           stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
        }
 
        weightsInfluenceList[[L + 1]] <-
          getLastWeightsInfluence( expectedOutput,
                                   nodeValue[[layer2nvIndex(L + 1)]],
                                   nodeValue[[layer2nvIndex(L)]])
-       stopifnot(dim(weightsInfluenceList[[L + 1]]) == dim(neuralnet$weights[[L + 1]]))
 
        for(l in rev(seq_len(L))) {
          weightsInfluenceList[[l]] <-
            getPrevWeightsInfluence(deltaList[[l]],
                                    nodeValue[[layer2nvIndex(l - 1)]])
-         stopifnot(dim(weightsInfluenceList[[l]]) == dim(neuralnet$weights[[l]]))
 
          if (l > 1) {
            deltaList[[l - 1]] <-
              getPrevDelta(deltaList[[l]],
                           rawNodeValue[[layer2nvIndex(l - 1)]],
                           neuralnet$weights[[l]], neuralnet$dActfct)
-           stopifnot(dim(deltaList[[l - 1]]) == dim(neuralnet$bias[[l - 1]]))
          }
        }
        biasUpdates <- list()

@@ -5,3 +5,5 @@
 .DS_Store
 .test.png
 inst/doc
+/doc/
+/Meta/

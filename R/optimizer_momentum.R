@@ -114,7 +114,6 @@ public = list(
       getLastWeightsInfluenceL[[neuralnet$category]]
 
     for(training_data in sample(training_data)) {
-      #print(training_data)
       netCalcResult <- neuralnet$calculate(training_data$input)
 
       expectedOutput <- training_data$expectedOutput
@@ -135,37 +134,22 @@ public = list(
           getLastDelta(lastXInfluence,
                        rawNodeValue[[layer2nvIndex(L)]],
                        neuralnet$dActfct)
-        stopifnot(dim(deltaList[[L]]) == dim(neuralnet$bias[[L]]))
-
-        if(!all(!is.nan(deltaList[[L]]))) {
-          print(str_c("Delta: ", L))
-          stop()
-        }
       }
 
       weightsInfluenceList[[L + 1]] <-
         getLastWeightsInfluence( expectedOutput,
                                  nodeValue[[layer2nvIndex(L + 1)]],
                                  nodeValue[[layer2nvIndex(L)]])
-      stopifnot(dim(weightsInfluenceList[[L + 1]]) == dim(neuralnet$weights[[L + 1]]))
-
-      if(!all(!is.nan(weightsInfluenceList[[L + 1]]))) {
-        print(str_c("Weights: ", L + 1))
-        print(weightsInfluenceList[[L + 1]])
-        stop()
-      }
 
       for(l in rev(seq_len(L))) {
         weightsInfluenceList[[l]] <-
           getPrevWeightsInfluence(deltaList[[l]],
                                   nodeValue[[layer2nvIndex(l - 1)]])
-        stopifnot(dim(weightsInfluenceList[[l]]) == dim(neuralnet$weights[[l]]))
         if (l > 1) {
           deltaList[[l - 1]] <-
             getPrevDelta(deltaList[[l]],
                          rawNodeValue[[layer2nvIndex(l - 1)]],
                          neuralnet$weights[[l]], neuralnet$dActfct)
-          stopifnot(dim(deltaList[[l - 1]]) == dim(neuralnet$bias[[l - 1]]))
         }
       }
       biasUpdates <- list()
