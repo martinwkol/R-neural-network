@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(NeuralNetwork)
 ```
 ## Functionality
-This package provides functionality to built user-defined feedforward Neural Networks for classification and 
+This package provides functionality to built user-defined feedforward Neural Networks for classification and regression
 <br>
 You can
 
@@ -39,17 +39,20 @@ You can
 First you have to create a Neural Network.
 
 
-This will generate a Neural Network with two input nodes, two output nodes and two hidden layers with four nodes each:
+This will generate a Neural Network for classification with two input nodes, two output nodes and two hidden layers with four nodes each:
 
-`nn <- NeuralNet$new(c(2,4,4,2))`
+`nn <- NeuralNet$new(c(2,4,4,2), category = "classification")`
 
 <br>
 
-This will generate a Neural Network using the predefined sigmoid function as
-activation function for all layers, including the output-layer:
+This will generate a Neural Network for regression using the predefined sigmoid function as
+activation function:
 
+```
+nn <- NeuralNet$new(c(2,4,4,1), activationfct = "sigmoid", 
+                    category = "regression")
+```
 
-`nn <- NeuralNet$new(c(2,4,4,2), activationfct = "sigmoid", outputfct = "sigmoid")`
 
 ## 2. Configure Optimizer
 
@@ -61,9 +64,7 @@ You can choose between three optimizer algorithms:
 
 * Nesterov accelerated gradient
 
-
-
-This will generate a Stochastic Gradient Descent with Momentum Optimizer with a learning_rate of 0.0005, regularization_rate of 0 and a momentum_term of 0:
+This will generate a Stochastic Gradient Descent with Momentum Optimizer with a learning_rate of 0.0005, regularization_rate of 0 and a momentum_term of 0.9:
  
 `optimizer <- OptimizerMomentum$new(0.0005, 0, 0.9)`
 
@@ -75,6 +76,36 @@ The previous set values can be changed:
    optimizer$setRegularizationRate(0.00001)
    optimizer$setMomentumTerm(0.8)
 ```
+
+## 3. Create a Trainer
+The trainer class manages the training and the testing process of a given network for a given optimizer.
+
+
+This generates a trainer:
+```
+trainer <- Trainer$new(nn, optimizer)
+
+```
+
+If you want, you can already give the trainer the training data and the test data
+that you want to use. The training data and the test data each have to be lists
+in the format that you can see below.
+
+```
+training_data <- list(
+    list(input = 1:784, expectedOutput = 2),
+    list(input = 784:1, expectedOutput = 10) # ,
+    # ...
+)
+test_data <- list(
+    list(input = 1:784 * 2, expectedOutput = 1) # ,
+    # ...
+)
+trainer <- Trainer$new(nn_cls, optimizer,
+                       training_data,
+                       test_data))
+```
+
 
 ## 3. Prepare Data
 
