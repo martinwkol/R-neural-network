@@ -54,6 +54,32 @@ trainer2$train(
 
 
 ## ------------------------------------------------
+## Method `Trainer$setTrainingData`
+## ------------------------------------------------
+
+training_data <- list(
+  list(input = c(0.5, 0.5),
+       expectedOutput = 2),
+  list(input = c(0.1, 0.8),
+       expectedOutput = 1)
+)
+trainer$setTrainingData(training_data)
+
+
+## ------------------------------------------------
+## Method `Trainer$setTestData`
+## ------------------------------------------------
+
+test_data <- list(
+  list(input = c(0.5, 0.5),
+       expectedOutput = 2),
+  list(input = c(0.1, 0.8),
+       expectedOutput = 1)
+)
+trainer$setTestData(test_data)
+
+
+## ------------------------------------------------
 ## Method `Trainer$separateData`
 ## ------------------------------------------------
 
@@ -240,10 +266,27 @@ Sets the training data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{training_data}}{The list of the training data}
+\item{\code{training_data}}{A list of lists that must each contain the
+named components \code{input} and \code{expectedOutput};
+The data to be separated into training data and test data}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{training_data <- list(
+  list(input = c(0.5, 0.5),
+       expectedOutput = 2),
+  list(input = c(0.1, 0.8),
+       expectedOutput = 1)
+)
+trainer$setTrainingData(training_data)
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setTestData"></a>}}
@@ -257,10 +300,27 @@ Sets the test data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{test_data}}{The list of the test data}
+\item{\code{test_data}}{A list of lists that must each contain the
+named components \code{input} and \code{expectedOutput};
+The data to be separated into training data and test data}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{test_data <- list(
+  list(input = c(0.5, 0.5),
+       expectedOutput = 2),
+  list(input = c(0.1, 0.8),
+       expectedOutput = 1)
+)
+trainer$setTestData(test_data)
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getNeuralnet"></a>}}

@@ -8,6 +8,13 @@ This class is responsible for performing the
 optimization method "Nesterov accelerated gradient"
 on a neural network for a given list of training data
 }
+\examples{
+optimizer <- OptimizerNesterovAG$new(0.0005, 0, 0.9)
+optimizer$setLearningRate(0.0001)
+optimizer$setRegularizationRate(0.00001)
+optimizer$setMomentumTerm(0.8)
+
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{

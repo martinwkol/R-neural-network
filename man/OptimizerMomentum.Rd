@@ -9,6 +9,13 @@ optimization method "Stochastic Gradient Descent"
 with the momentum optimization
 on a neural network for a given list of training data
 }
+\examples{
+optimizer <- OptimizerMomentum$new(0.0005, 0, 0.9)
+optimizer$setLearningRate(0.0001)
+optimizer$setRegularizationRate(0.00001)
+optimizer$setMomentumTerm(0.8)
+
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
