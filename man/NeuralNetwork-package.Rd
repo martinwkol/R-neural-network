@@ -6,7 +6,10 @@
 \alias{NeuralNetwork-package}
 \title{NeuralNetwork: Creating, Training and Using Neural Networks}
 \description{
-Used to Create and Train Neural Networks
+A package for creating and trainging neural networks.
+The package supports the training method "Stochastic
+Gradient Descent" and two optimized versions of this
+method using momentum.
 }
 \author{
 \strong{Maintainer}: Rico Sebastian \email{r.j.g.sebastian@gmail.com}
