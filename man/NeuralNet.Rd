@@ -211,7 +211,8 @@ plot an R6 NeuralNet using graphics and grDevices
   col.fct = function(x) {     grDevices::hcl(x * 60 + 60) },
   image.save = FALSE,
   image.filename = NULL,
-  image.type = NULL
+  image.type = NULL,
+  lables = TRUE
 )}\if{html}{\out{</div>}}
 }
 

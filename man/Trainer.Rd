@@ -51,6 +51,8 @@ trainer$generateTrainingTest
 \item \href{#method-setOptimizer}{\code{Trainer$setOptimizer()}}
 \item \href{#method-setTrainingData}{\code{Trainer$setTrainingData()}}
 \item \href{#method-setTestData}{\code{Trainer$setTestData()}}
+\item \href{#method-getNeuralnet}{\code{Trainer$getNeuralnet()}}
+\item \href{#method-getOptimizer}{\code{Trainer$getOptimizer()}}
 \item \href{#method-getTrainingData}{\code{Trainer$getTrainingData()}}
 \item \href{#method-getTestData}{\code{Trainer$getTestData()}}
 \item \href{#method-getBestNeuralnet}{\code{Trainer$getBestNeuralnet()}}
@@ -176,6 +178,31 @@ Sets the test data
 \item{\code{test_data}}{The list of the test data}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getNeuralnet"></a>}}
+\if{latex}{\out{\hypertarget{method-getNeuralnet}{}}}
+\subsection{Method \code{getNeuralnet()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$getNeuralnet()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The new neural network to be trained
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getOptimizer"></a>}}
+\if{latex}{\out{\hypertarget{method-getOptimizer}{}}}
+\subsection{Method \code{getOptimizer()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Trainer$getOptimizer()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The optimizer used for training
+the neural network
 }
 }
 \if{html}{\out{<hr>}}
