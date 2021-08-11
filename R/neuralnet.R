@@ -34,9 +34,6 @@ public = list(
   #' @field dActfct function to be used as derivative of the activation function.
   dActfct = NULL,
 
-  #' @field outputfct function to be used as activation function on the last layer.
-  outputfct = NULL,
-
   #' @field category either classification or regression
   category = NULL,
 
@@ -85,7 +82,7 @@ public = list(
   #'   activationfct = "sigmoid",
   #'   outputfct = "sigmoid")
   initialize = function(layers, activationfct = "ReLU", dActivationfct = NULL,
-                        outputfct = NULL, category="classification") {
+                        category="classification") {
 
     stopifnot("The neural network must at least have 2 layers: An input and an output layer"
               = length(layers) >= 2)
@@ -101,19 +98,6 @@ public = list(
       self$dActfct <- dActivationfct
     } else {
       stop("activationfct must be a character or function")
-    }
-
-    #choose activation function for outputlayer
-    if(is.null(outputfct)) {
-      self$outputfct <- function(x){x}
-    } else if(class(outputfct) == "character") {
-      stopifnot("Specified activation function for the output layer is not
-                implemented." = !is.null(predefinedactivation[[outputfct]]))
-      self$outputfct <- predefinedactivation[[outputfct]]
-    } else if (class(outputfct) == "function") {
-      self$outputfct <- outputfct
-    } else {
-      stop("outputfct must be a character, function or NULL")
     }
 
     self$inputsize <- layers[1]
@@ -174,7 +158,7 @@ public = list(
 
     output <- self$weights[[self$nrhiddenlayers + 1]] %*% output
     rawNodeValues[[length(rawNodeValues) + 1]] <- output
-    output <- sapply(output, self$outputfct)
+    output <- sapply(output, function(x) x)
     nodeValues[[length(nodeValues) + 1]] <- output
 
     stopifnot(all(!is.nan(output)))
