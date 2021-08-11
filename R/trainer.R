@@ -329,7 +329,10 @@ public = list(
     stopifnot("No test data is given" = !is.null(private$test_data))
 
     N <- min(N, length(private$test_data))
-    data_to_test <- private$test_data[seq(N)]
+    data_to_test <- private$test_data
+    if(N != length(private$test_data)){
+      data_to_test <- sample(private$test_data, N)
+    }
     accuracyVals <- sapply(data_to_test, function(td) {
       netResult <- private$neuralnet$calculate(td$input)
       netOutput <- netResult$output
