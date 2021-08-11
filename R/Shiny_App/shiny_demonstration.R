@@ -39,8 +39,8 @@ ui <- tagList(shinyjs::useShinyjs(),navbarPage("NeuralNet",
         plotOutput("visplot")
       ),
       tabPanel("Learning Curve",
-        plotOutput("curvePlot")
-      ),
+        plotOutput("curvePlot"))
+      ,
       tabPanel("Draw Yourself")
     )
   )
@@ -69,12 +69,19 @@ server <- function(input, output, session) {
 
     output$visplot <- renderPlot({
       session$userData$nn$plot()
-    })
+    }, height=700)
+    output$curvePlot <- renderPlot({
+      plot(x=NULL, y=NULL, xlim=c(0,60000), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
+    }, height=700)
+    session$userData$x <- NULL
+    session$userData$y <- NULL
+    session$userData$lastx <- 0
     shinyjs::enable("trainNet")
   })
 
   #Train network
   observeEvent(input$trainNet,{
+    shinyjs::disable("trainNet")
     nn <- session$userData$nn
     learningRate <- as.numeric(input$learningRate)
     regrate <- as.numeric(input$regrate)
@@ -91,9 +98,29 @@ server <- function(input, output, session) {
 
     epochs <- input$epochs
     dataPerEpoch <- input$dataPerEpoch
-    for(i in 1:(dataPerEpoch/500)) {
-      print(i)
+    if(session$userData$lastx == 0) {
+      session$userData$x <- 0
+      session$userData$y <- trainer$test(1000)
     }
+    for(i in 1:(dataPerEpoch/500)) {
+      trainer$train(1, 500)
+      trainer$swapWithBestNeuralnet()
+      session$userData$lastx <- session$userData$lastx + 500
+      session$userData$x <- c(session$userData$x, session$userData$lastx)
+      session$userData$y <- c(session$userData$y, trainer$test(1000))
+    }
+    output$curvePlot <- renderPlot({
+      plot(x=session$userData$x, y=session$userData$y, type="l", xlim=c(0,max(60000, session$userData$lastx)), ylim=c(0,1), xlab="Number of Datapoints trained", ylab="Accuracy")
+      abline(h = max(session$userData$y), col="red", lty="dashed")
+    }, height=700)
+    session$userData$nn <- trainer$getNeuralnet()
+
+
+    output$visplot <- renderPlot({
+      session$userData$nn$plot()
+    }, height=700)
+
+    shinyjs::enable("trainNet")
   })
 }
 
@@ -109,4 +136,4 @@ app <- shinyApp(ui, server)
 
 app
 
-plot(sinpi)
+
