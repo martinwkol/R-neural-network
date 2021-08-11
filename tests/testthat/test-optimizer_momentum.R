@@ -1,6 +1,6 @@
 test_that("optim", {
   set.seed(10)
-  nn <- NeuralNet$new(c(1, 3, 10), category = "classification")
+  nn <- NeuralNet$new(c(1, 3, 10, 25, 10), category = "classification")
   oldWeights <- rlang::duplicate(nn$weights)
   optimizer <- OptimizerMomentum$new(0.1, 0)
   training_data <- list(list(input = 1, expectedOutput = 1))

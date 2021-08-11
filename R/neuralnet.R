@@ -87,6 +87,9 @@ public = list(
   initialize = function(layers, activationfct = "ReLU", dActivationfct = NULL,
                         outputfct = NULL, category="classification") {
 
+    stopifnot("The neural network must at least have 2 layers: An input and an output layer"
+              = length(layers) >= 2)
+
     #choose activation function
     if(class(activationfct) == "character") {
       stopifnot("Specified activation function is not implemented." = !is.null(predefinedactivation[[activationfct]]))
