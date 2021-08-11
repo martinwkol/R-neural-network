@@ -17,7 +17,7 @@
 #'    list(input = 784:1, expectedOutput = 10),
 #'    ...
 #' )
-#' training_data <- list(
+#' test_data <- list(
 #'    list(input = 1:784 * 2, expectedOutput = 1),
 #'    ...
 #' )
@@ -26,6 +26,7 @@
 #'                        test_data))
 #'
 #' trainer$train(epochs = 5)
+#' trainer$test()
 #'
 #' # ------------------------------------------------
 #' # Example 2
@@ -33,7 +34,7 @@
 #' optimizer <- OptimizerMomentum$new(0.0005, 0, 0.9)
 #'
 #' nn_reg <- NeuralNet$new(c(784,  200, 1),
-#'              category="regression"
+#'              category="regression")
 #' accuracy_tester <- accuracy_tester_regression_rel(0.1)
 #' inputs <- list(1:784, 784:1, 1:784 * 2, ...)
 #' targets <- list(5.7, 1.7, 10.7, ...)
@@ -47,7 +48,7 @@
 #'      es_test_frequency = 1000,
 #'      es_test_size = 100,
 #'      es_minimal_improvement = -0.02)
-#'
+#' trainer$test(500)
 #'
 #' @export
 Trainer <- R6::R6Class("Trainer",
@@ -106,6 +107,21 @@ public = list(
   #' If the neural network uses regression, a custom
   #' \code{accuracy_tester} method must be given
   #' @seealso ?NeuralNet
+  #'
+  #' @examples
+  #' training_data <- list(
+  #'    list(input = 1:784, expectedOutput = 2),
+  #'    list(input = 784:1, expectedOutput = 10),
+  #'    ...
+  #' )
+  #' test_data <- list(
+  #'    list(input = 1:784 * 2, expectedOutput = 1),
+  #'    ...
+  #' )
+  #' trainer <- Trainer$new(nn_cls, optimizer,
+  #'                        training_data,
+  #'                        test_data))
+  #'
   #' @export
   initialize = function(neuralnet, optimizer,
                         training_data = NULL, test_data = NULL,

@@ -1,4 +1,4 @@
-#' Optimizer Stochastic Gradient Descent with Momentum
+#' Optimizer Nesterov Accelerated Gradient
 #'
 #' @description
 #' This class is responsible for performing the
