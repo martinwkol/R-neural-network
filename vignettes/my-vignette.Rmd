@@ -149,3 +149,4 @@ This will give you a visualization of the Neural Network:
 nn$plot()
 
 ```
+![NeuralNetwork-Example](example.jpg)
