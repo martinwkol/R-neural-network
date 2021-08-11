@@ -23,7 +23,7 @@
 #' )
 #' trainer1 <- Trainer$new(nn_cls, optimizer,
 #'                        training_data,
-#'                        test_data))
+#'                        test_data)
 #'
 #' trainer$train(epochs = 5)
 #' trainer$test()

@@ -79,8 +79,7 @@ public = list(
   #' # activation function for all layers (including the outputlayer)
   #' nn.2 <- NeuralNet$new(
   #'   c(2,4,4,2),
-  #'   activationfct = "sigmoid",
-  #'   outputfct = "sigmoid")
+  #'   activationfct = "sigmoid")
   initialize = function(layers, activationfct = "ReLU", dActivationfct = NULL,
                         category="classification") {
 
