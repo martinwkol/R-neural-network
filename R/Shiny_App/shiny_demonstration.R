@@ -1,3 +1,4 @@
+library(NeuralNetwork)
 library(shiny)
 library(stringr)
 source("./mnist.R", echo=FALSE)
